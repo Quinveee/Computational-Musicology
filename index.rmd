@@ -38,13 +38,19 @@ corpus |>
 ## Plots
 
 ```{r}
-energy_plot <- ggplot(corpus, aes(x = energy, fill=track.album.name)) + 
-  geom_histogram(binwidth = 0.05) + 
+energy_plot <- ggplot(corpus, aes(x = liveness, acousticness, color = speechiness, size = speechiness)) + 
+  geom_point() + 
+  geom_jitter(alpha = 0.5, width = 0.1) +
   theme_classic() + 
-  theme(legend.position = 'none') 
+  scale_color_viridis_c() + 
+  guides(size = "none") +
+  labs(x = "Acousticness",
+       y = "Liveness",
+       title = "Comparison of Liveness, Acousticness and Speechness",
+       subtitle = "The plot consists of the liveness, acousticness and speechness of all individual songs")
+
 print(energy_plot)
 ```
-
 
 ```{r}
 #artists <- corpus %>%
@@ -78,4 +84,3 @@ ggplot(corpus_energy, aes(x = album_energy, y = reorder(track.album.name, album_
   ) 
 
 ```
-
