@@ -7,9 +7,11 @@ However, most of the corpus consists of more typical genre representative albums
 So, all in all, the corpus consists of a combination of typical and atypical albums which should lead to an interesting analysis of the distinctions an overlap between genres and individual albums/songs.
 
 ## Plot 1
-
+Plot 1 shows a comparrison of the liveness, acousticness and the speechness of each individual song. What is interesting about the plot is that there appears to be verry little acousticness and speechness. This is relativally odd as many of the songs should contain speech, furthermore, the acousticness seems rather low, possebly due to the amount of ambient music, but still apears low as there are manny rock albums. 
+The liveliness on the other hand seems all over the place, likely due to the fast differences in genres.
 
 ## Plot 2
+Plot 2 shows the mean energy levels of all albums in decending order. What is interesting about this plot is that the albums seems to contain nearly the entire range of the energy spectrum, all the way from A I A: Alien Observer at a level of around 0.13 to World is Yours at almost 1, with an overall mean of around 0.6. 
 
 ## Appendix (album - artist)
 THE – tricot
