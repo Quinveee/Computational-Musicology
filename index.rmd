@@ -11,20 +11,71 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## R Markdown
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+```{r}
+library(tidyverse)
+library(spotifyr)
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r}
+corpus <- get_playlist_audio_features("", "75LhP6wXfee0eYHuW28nkw")
+corpus |>
+  summarise(
+    mean_speechiness = mean(speechiness),
+    mean_acousticness = mean(acousticness),
+    mean_liveness = mean(liveness),
+    sd_speechiness = sd(speechiness),
+    sd_acousticness = sd(acousticness),
+    sd_liveness = sd(liveness),
+    median_speechiness = median(speechiness),
+    median_acousticness = median(acousticness),
+    median_liveness = median(liveness),
+    mad_speechiness = mad(speechiness),
+    mad_acousticness = mad(acousticness),
+    mad_liveness = mad(liveness)
+  )
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+## Plots
+
+```{r}
+energy_plot <- ggplot(corpus, aes(x = energy, fill=track.album.name)) + 
+  geom_histogram(binwidth = 0.05) + 
+  theme_classic() + 
+  theme(legend.position = 'none') 
+print(energy_plot)
+```
+
+
+```{r}
+#artists <- corpus %>%
+#  dplyr::pull(track.artists) %>% .[c(1, 2)]
+#
+#print(artists[2])
+#artists <- corpus['track.artists'][[1]]
+#print(artists[names(artists) %in% c("tricot")])
+library(tidytext)
+
+corpus_energy <- corpus %>% 
+  group_by(track.album.name) %>%
+  summarize(album_energy=mean(energy))
+
+global_mean <- mean(corpus$energy)
+
+ggplot(corpus_energy, aes(x = album_energy, y = reorder(track.album.name, album_energy), color = album_energy)) +
+  geom_point(size = 4) +
+  geom_vline(xintercept = global_mean, color = "grey40", linetype = 3) +
+  geom_segment(aes(xend = 0, yend = track.album.name), size = 2) + 
+  theme_classic() +
+  theme(legend.position = 'none') +
+  labs(x = "Album's Mean Energy",
+       y = "Album",
+       title = "Albums ranked on their mean energy level") + 
+  annotate(
+    "text",
+    x = global_mean + 0.06, y = 8,
+    label = "Global\nmean",
+    vjust = 1, size = 3, color = "grey40"
+  ) 
+
+```
+
