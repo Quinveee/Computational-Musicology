@@ -138,6 +138,26 @@ sdkljfl;asjd;lkfj;laskjdf
 ### Chroma 1
 
 ```{r, echo=FALSE, fig.width=15, fig.height=4}
+# Hopelessness 5gTGFOB8RIihsPxfIC0OtH
+## Slowdeath 1BeXGCZcCtfnW6stIaat1M
+# Romantic Menory 1 624OIP4GiJDuDzlnm6j3Eo
+# Daikaze... 52jaRS6n9DXbgf0Hd1sxlh
+# No Suprises 10nyNJ6zNy2YVYLrcwLccB
+# shine on you crazy diamonds 32dnKMni3I3gwUbWp4mi45
+# small ... kid 6hUeV1owXYwGT0iKQH5hg4
+# roygbiv 5Hf2h59YLInKlic7ooWZVd
+# ... natsu 2dFUtZtpWydAU4QMmUOK47
+# Building stream... nor. 6K8J4txeZp5anMIE0srVqr
+# Building stream... alter. 6YluFLtLKCjW5hajXJj5oC
+# building a better world [-1] 6wemF0lNDZUnZE4DE2BD0t
+# jvnko loves you 2EBjkOHOH7HBh1smT7pTb1
+## the dead flag blues 0YzMEu5sGNX0JKr9mdBtzd
+# weird fishes 4wajJ1o7jWIg62YqpkHC7S
+# only shallow 1KKuoYESWoUGsau6YYoEMl
+# artsick 7Jzw6ZqrFefr5KlrQzgGJr
+# 99.974 1bhmtYR8dE9XtRAJzQwbZe
+## Nan Nan 3ICD0niQsK2ngW9zDbYlkI
+
 rainseason <-
   get_tidy_audio_analysis("08b1bCjsKjMzhjBm0qhkof") |>
   select(segments) |>
@@ -156,6 +176,9 @@ rainseason |>
     )
   ) +
   geom_tile() +
+  geom_vline(xintercept = 150, color = "red", size = 1) +
+  geom_vline(xintercept = 1010, color = "red", size = 1) +
+  geom_vline(xintercept = 1240, color = "red", size = 1) +
   labs(x = "Time (s)", y = NULL, fill = "Magnitude") +
   theme_minimal() +
   scale_fill_viridis_c()
@@ -165,13 +188,42 @@ rainseason |>
 ### Chroma 2
 
 ```{r, echo=FALSE, fig.width=15, fig.height=4}
-fellinlove <-
-  get_tidy_audio_analysis("7qgVP1RmTu8Kg3MGsIl87D") |>
+thedeadflagblues <-
+  get_tidy_audio_analysis("0YzMEu5sGNX0JKr9mdBtzd") |>
   select(segments) |>
   unnest(segments) |>
   select(start, duration, pitches)
 
-fellinlove |>
+thedeadflagblues |>
+  mutate(pitches = map(pitches, compmus_normalise, "euclidean")) |>
+  compmus_gather_chroma() |> 
+  ggplot(
+    aes(
+      x = start + duration / 2,
+      width = duration,
+      y = pitch_class,
+      fill = value
+    )
+  ) +
+  geom_tile() +
+  geom_vline(xintercept = 395, color = "red", size = 1) +
+  geom_vline(xintercept = 608, color = "red", size = 1) +
+  labs(x = "Time (s)", y = NULL, fill = "Magnitude") +
+  theme_minimal() +
+  scale_fill_viridis_c()
+
+```
+
+### Chroma 3
+
+```{r, echo=FALSE, fig.width=15, fig.height=4}
+nannan <-
+  get_tidy_audio_analysis("3ICD0niQsK2ngW9zDbYlkI") |>
+  select(segments) |>
+  unnest(segments) |>
+  select(start, duration, pitches)
+
+nannan |>
   mutate(pitches = map(pitches, compmus_normalise, "euclidean")) |>
   compmus_gather_chroma() |> 
   ggplot(
@@ -189,24 +241,41 @@ fellinlove |>
 
 ```
 
-### Chroma 3
+### Chroma 4
 
 ```{r, echo=FALSE, fig.width=15, fig.height=4}
-# Hopelessness 5gTGFOB8RIihsPxfIC0OtH
-# Slowdeath 1BeXGCZcCtfnW6stIaat1M
-# Romantic Menory 1 624OIP4GiJDuDzlnm6j3Eo
-# Daikaze... 52jaRS6n9DXbgf0Hd1sxlh
-# No Suprises 10nyNJ6zNy2YVYLrcwLccB
-# shine on you crazy diamonds 32dnKMni3I3gwUbWp4mi45
-# small ... kid 6hUeV1owXYwGT0iKQH5hg4
-# roygbiv 5Hf2h59YLInKlic7ooWZVd
-# ... natsu 2dFUtZtpWydAU4QMmUOK47
-# Building stream... nor. 6K8J4txeZp5anMIE0srVqr
-# Building stream... alter. 6YluFLtLKCjW5hajXJj5oC
-# building a better world [-1] 6wemF0lNDZUnZE4DE2BD0t
+hopelessness <-
+  get_tidy_audio_analysis("5gTGFOB8RIihsPxfIC0OtH") |>
+  select(segments) |>
+  unnest(segments) |>
+  select(start, duration, pitches)
 
+hopelessness |>
+  mutate(pitches = map(pitches, compmus_normalise, "euclidean")) |>
+  compmus_gather_chroma() |> 
+  ggplot(
+    aes(
+      x = start + duration / 2,
+      width = duration,
+      y = pitch_class,
+      fill = value
+    )
+  ) +
+  geom_tile() +
+  geom_vline(xintercept = 108, color = "red", size = 1) +
+  geom_vline(xintercept = 155, color = "red", size = 1) +
+  geom_vline(xintercept = 227, color = "green", size = 1) +
+  labs(x = "Time (s)", y = NULL, fill = "Magnitude") +
+  theme_minimal() +
+  scale_fill_viridis_c()
+
+```
+
+### Chroma 5
+
+```{r, echo=FALSE, fig.width=15, fig.height=4}
 slowdeath <-
-  get_tidy_audio_analysis("6wemF0lNDZUnZE4DE2BD0t") |>
+  get_tidy_audio_analysis("624OIP4GiJDuDzlnm6j3Eo") |>
   select(segments) |>
   unnest(segments) |>
   select(start, duration, pitches)
@@ -231,29 +300,37 @@ slowdeath |>
 
 ## Row
 
-### sdkjkljds
-
-sdkljfl;asjd;lkfj;laskjdf
-
-
 ### Dynamic Time Wrapping
 
-```{r, echo=FALSE, fig.width=20, fig.height=20}
-buildingstream_nor <-
-  get_tidy_audio_analysis("6K8J4txeZp5anMIE0srVqr") |>
+In DTW 1 I have compared the live version of underwater by elephant gym to their studio performance. The graph shows us that the two versions are very similar to each other by the apparent diagonal line. 
+That the 2 versions are so similar is not strange at all as Underwater is a math-rock song. This means that the song is performed by a band where typically the drummer and/or the bass decides the rhythm and tempo at which the whole band plays. If the rhythm/tempo is slightly off the whole song will 'fall apart', so keeping a consistent rhythm and tempo is crucial to a performance. 
+That being said, the 2 songs do still differ, just not in rhythm or tempo. Rather, they differ in timber and sound stage. likely due to how/where they were recorded and things like the effects the instruments used (a.e. guitar pedals) or ones that were added later. 
+
+
+
+### DTW 1
+
+```{r, echo=FALSE, fig.width=10, fig.height=10}
+# underwater live 01aYWPwgS52VhujkRnQn6p
+# underwater 3bZaxtkOP7zxmHtS3d4n2X
+# finger live 5KufVu7rjJXEBCFuvaXaeF
+# finger 7ejqDX4cLKQ915nrtnbZO4
+
+underwater <-
+  get_tidy_audio_analysis("3bZaxtkOP7zxmHtS3d4n2X") |>
   select(segments) |>
   unnest(segments) |>
   select(start, duration, pitches)
 
-buildingstream_alt <-
-  get_tidy_audio_analysis("6YluFLtLKCjW5hajXJj5oC") |>
+underwater_live <-
+  get_tidy_audio_analysis("01aYWPwgS52VhujkRnQn6p") |>
   select(segments) |>
   unnest(segments) |>
   select(start, duration, pitches)
 
 compmus_long_distance(
-  buildingstream_nor |> mutate(pitches = map(pitches, compmus_normalise, "chebyshev")),
-  buildingstream_alt |> mutate(pitches = map(pitches, compmus_normalise, "chebyshev")),
+  underwater |> mutate(pitches = map(pitches, compmus_normalise, "chebyshev")),
+  underwater_live |> mutate(pitches = map(pitches, compmus_normalise, "chebyshev")),
   feature = pitches,
   method = "euclidean"
 ) |>
@@ -268,7 +345,8 @@ compmus_long_distance(
   ) +
   geom_tile() +
   coord_equal() +
-  labs(x = "Building Stream With A Grain of Salt", y = "Building Stream With A Grain of Salt Alternate version") +
+  labs(x = "Underwater", y = "Underwater live version") +
+  theme(axis.title = element_text(size=20))+
   theme_minimal() +
   scale_fill_viridis_c(guide = NULL)
 
