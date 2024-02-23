@@ -60,22 +60,24 @@ Plot 2 shows the mean energy levels of all albums in decending order. What is in
 ### Plot A
 
 ```{r, echo=FALSE}
-multi_plot_1 <- ggplot(corpus, aes(x = liveness, acousticness, color = speechiness, size = speechiness)) + 
-  geom_point() + 
-  geom_jitter(alpha = 0.5, width = 0.1) +
+corpus_with_title <- 
+  corpus %>%
+  mutate(title = paste(track.album.name, " - ", track.name))
+
+
+multi_plot_1 <- ggplot(corpus_with_title, aes(x = liveness, acousticness, color = speechiness, size = speechiness, label = title)) +
+  geom_jitter(alpha = 0.7, width = 0.1) +
   theme_classic() + 
   scale_color_viridis_c() + 
   guides(size = "none") +
-  labs(x = "Acousticness",
-       y = "Liveness",
-       title = "Comparison of Liveness, Acousticness and Speechness",
+  labs(title = "Comparison of Liveness, Acousticness and Speechness",
        subtitle = "The plot consists of the liveness, acousticness and speechness of all individual songs"
   ) + 
   theme(
     legend.position = "Bottom"
   )
 
-ggplotly(multi_plot_1)
+ggplotly(multi_plot_1, tooltip = c("x", "y", "label", "size"))
 ```
 
 ### Plot B
@@ -173,9 +175,12 @@ fellinlove |>
 # Romantic Menory 1 624OIP4GiJDuDzlnm6j3Eo
 # Daikaze... 52jaRS6n9DXbgf0Hd1sxlh
 # No Suprises 10nyNJ6zNy2YVYLrcwLccB
+# shine on you crazy diamonds 32dnKMni3I3gwUbWp4mi45
+# small ... kid 6hUeV1owXYwGT0iKQH5hg4
+# roygbiv 5Hf2h59YLInKlic7ooWZVd
 
 slowdeath <-
-  get_tidy_audio_analysis("10nyNJ6zNy2YVYLrcwLccB") |>
+  get_tidy_audio_analysis("5Hf2h59YLInKlic7ooWZVd") |>
   select(segments) |>
   unnest(segments) |>
   select(start, duration, pitches)
