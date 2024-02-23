@@ -3,9 +3,9 @@ title: "Spotify Analysis"
 output:
   flexdashboard::flex_dashboard:
     orientation: columns
-    logo: 
-      src: "github_logo.png"
-      href: "https://github.com/Quinveee/Computational-Musicology"
+    # logo: "Images\github_logo.png"
+      # src: "Images\github_logo.png"
+      # href: "https://github.com/Quinveee/Computational-Musicology"
     css: style.css
 ---
 
@@ -17,6 +17,7 @@ library(tidyverse)
 library(spotifyr)
 library(flexdashboard)
 library(plotly)
+library(compmus)
 
 corpus <- get_playlist_audio_features("", "75LhP6wXfee0eYHuW28nkw")
 corpus |>
@@ -36,11 +37,9 @@ corpus |>
   )
 ```
 
-Corpus
-=====================================
+# Corpus
 
-Column {data-width=350}
--------------------------------------
+## Column {data-width="350"}
 
 ### Analysis of my Personal Spotify Library
 
@@ -56,9 +55,7 @@ Plot 1 shows a comparrison of the liveness, acousticness and the speechness of e
 
 Plot 2 shows the mean energy levels of all albums in decending order. What is interesting about this plot is that the albums seems to contain nearly the entire range of the energy spectrum, all the way from A I A: Alien Observer at a level of around 0.13 to World is Yours at almost 1, with an overall mean of around 0.6.
 
-
-Column {data-width=650}
--------------------------------------
+## Column {data-width="650"}
 
 ### Plot A
 
@@ -80,7 +77,6 @@ multi_plot_1 <- ggplot(corpus, aes(x = liveness, acousticness, color = speechine
 
 ggplotly(multi_plot_1)
 ```
-
 
 ### Plot B
 
@@ -119,13 +115,89 @@ ggplotly(energy_plot_1)
 
 ```
 
+# Analysis
 
-Analysis
-=====================================
+## Column
 
+```{r, echo=FALSE}
+rainseason <-
+  get_tidy_audio_analysis("08b1bCjsKjMzhjBm0qhkof") |>
+  select(segments) |>
+  unnest(segments) |>
+  select(start, duration, pitches)
 
+rainseason |>
+  mutate(pitches = map(pitches, compmus_normalise, "euclidean")) |>
+  compmus_gather_chroma() |> 
+  ggplot(
+    aes(
+      x = start + duration / 2,
+      width = duration,
+      y = pitch_class,
+      fill = value
+    )
+  ) +
+  geom_tile() +
+  labs(x = "Time (s)", y = NULL, fill = "Magnitude") +
+  theme_minimal() +
+  scale_fill_viridis_c()
 
-Findings
-=====================================
+```
+```{r, echo=FALSE}
+fellinlove <-
+  get_tidy_audio_analysis("7qgVP1RmTu8Kg3MGsIl87D") |>
+  select(segments) |>
+  unnest(segments) |>
+  select(start, duration, pitches)
 
+fellinlove |>
+  mutate(pitches = map(pitches, compmus_normalise, "euclidean")) |>
+  compmus_gather_chroma() |> 
+  ggplot(
+    aes(
+      x = start + duration / 2,
+      width = duration,
+      y = pitch_class,
+      fill = value
+    )
+  ) +
+  geom_tile() +
+  labs(x = "Time (s)", y = NULL, fill = "Magnitude") +
+  theme_minimal() +
+  scale_fill_viridis_c()
 
+```
+```{r, echo=FALSE}
+# Hopelessness 5gTGFOB8RIihsPxfIC0OtH
+# Slowdeath 1BeXGCZcCtfnW6stIaat1M
+# Romantic Menory 1 624OIP4GiJDuDzlnm6j3Eo
+# Daikaze... 52jaRS6n9DXbgf0Hd1sxlh
+# No Suprises 10nyNJ6zNy2YVYLrcwLccB
+
+slowdeath <-
+  get_tidy_audio_analysis("10nyNJ6zNy2YVYLrcwLccB") |>
+  select(segments) |>
+  unnest(segments) |>
+  select(start, duration, pitches)
+
+slowdeath |>
+  mutate(pitches = map(pitches, compmus_normalise, "euclidean")) |>
+  compmus_gather_chroma() |> 
+  ggplot(
+    aes(
+      x = start + duration / 2,
+      width = duration,
+      y = pitch_class,
+      fill = value
+    )
+  ) +
+  geom_tile() +
+  labs(x = "Time (s)", y = NULL, fill = "Magnitude") +
+  theme_minimal() +
+  scale_fill_viridis_c()
+
+```
+
+## Column
+
+# Findings
