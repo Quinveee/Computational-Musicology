@@ -8,6 +8,7 @@ output:
     theme:
       version: 4
       bootswatch: minty
+    vertical_layout: scroll
 ---
 
 ```{r setup, include=FALSE}
@@ -123,13 +124,18 @@ ggplotly(energy_plot_1)
 
 ```
 
-# Album Analysis {data-navmenu=Analysis}
+# Individual Songs {data-navmenu=Analysis data-orientation=rows}
 
-# Song Analysis {data-navmenu=Analysis}
+## Row
+
+### sdkjkljds
+
+sdkljfl;asjd;lkfj;laskjdf
+
 
 ## Column {.tabset .tabset-fade}
 
-### Chroma
+### Chroma 1
 
 ```{r, echo=FALSE, fig.width=15, fig.height=4}
 rainseason <-
@@ -155,6 +161,9 @@ rainseason |>
   scale_fill_viridis_c()
 
 ```
+
+### Chroma 2
+
 ```{r, echo=FALSE, fig.width=15, fig.height=4}
 fellinlove <-
   get_tidy_audio_analysis("7qgVP1RmTu8Kg3MGsIl87D") |>
@@ -179,6 +188,9 @@ fellinlove |>
   scale_fill_viridis_c()
 
 ```
+
+### Chroma 3
+
 ```{r, echo=FALSE, fig.width=15, fig.height=4}
 # Hopelessness 5gTGFOB8RIihsPxfIC0OtH
 # Slowdeath 1BeXGCZcCtfnW6stIaat1M
@@ -217,9 +229,16 @@ slowdeath |>
 
 ```
 
+## Row
+
+### sdkjkljds
+
+sdkljfl;asjd;lkfj;laskjdf
+
+
 ### Dynamic Time Wrapping
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, fig.width=20, fig.height=20}
 buildingstream_nor <-
   get_tidy_audio_analysis("6K8J4txeZp5anMIE0srVqr") |>
   select(segments) |>
