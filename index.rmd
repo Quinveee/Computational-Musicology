@@ -1,10 +1,12 @@
 ---
-title: 
+title: "Spotify Analysis"
 output:
   flexdashboard::flex_dashboard:
     orientation: columns
-    # navbar:
-    #   - {title: "About"}
+    logo: 
+      src: "github_logo.png"
+      href: "https://github.com/Quinveee/Computational-Musicology"
+    css: style.css
 ---
 
 ```{r setup, include=FALSE}
