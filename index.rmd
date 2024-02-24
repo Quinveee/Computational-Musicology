@@ -8,7 +8,7 @@ output:
     theme:
       version: 4
       bootswatch: minty
-    vertical_layout: scroll
+    vertical_layout: fill
 ---
 
 ```{r setup, include=FALSE}
@@ -20,6 +20,7 @@ library(spotifyr)
 library(flexdashboard)
 library(plotly)
 library(compmus)
+library(DT)
 
 corpus <- get_playlist_audio_features("", "75LhP6wXfee0eYHuW28nkw")
 corpus |>
@@ -47,6 +48,23 @@ corpus |>
 
 The corpus for this musical analysis consists of a collection of albums (see Appendix) that I chose based on my personal interest. I chose albums specifically, as it is the form in which I consume most of my music, but it will also ensure that the overlap in musical genres is more consistent between songs. This does however mean that the analysis will focus more on the difference between the albums as opposed to differences between individual songs. As for the corpus, it consists of a variety of genres including rock, pop, post-rock, ambient, shoegaze, neo-psychedelia, hip-hop. At first glance it might seem as if there is little overlap between the album’s genres, however, most can be categorized in either rock, ambient, pop, or hip-hop. Though there are some album’s that can be considered atypical for these categories, for example LONG SEASON by the Fishmans. This album consists of a single 35-minute song and incorporates a variety of genres into one. Another example is REGRET WHEN IT WAS LOST by death’s dynamic shroud which at points blurs the line between surrealism and music. Or F# A# ∞ by Godspeed You! Black Emperor, an album containing multiple monologues throughout the song creating an eerie vibe. I chose to incorporate these albums not only because they are some of my personal favorites but also for their uniqueness, which should hopefully lead to a more interesting analysis. The corpus contains many more such examples, which I will cover further in the analysis. However, most of the corpus consists of more typical genre representative albums, for example the albums made by; Radiohead, No Party For Coa Dong, tricot, Pink Floyd, Polyphia and Panchiko, are more typical to rock. So, all in all, the corpus consists of a combination of typical and atypical albums which should lead to an interesting analysis of the distinctions an overlap between genres and individual albums/songs.
 
+### Appendix (album - artist)
+
+```{r, echo=FALSE}
+appendix <- corpus %>%
+  select(track.album.name, track.name, track.album.release_date)
+
+# # a <- appendix[2, "track.album.id"]%>% pull(track.album.id) nrow(appendix)
+# for( i in 1:1){
+#   a <- unlist(appendix[i, "track.artists"])
+#   print(gregexec("([[:alpha:]]+)([[:digit:]]+)", a))
+#   appendix[i, "artist"] <- appendix[i, "track.artists"][[1]]
+# }
+# 
+# 
+# glimpse(appendix)
+datatable(appendix, height = 200, style = "auto", colnames = c("Album", "Track Name", "Release Date"))
+```
 
 # Global Analysis {data-navmenu=Analysis}
 
@@ -128,14 +146,25 @@ ggplotly(energy_plot_1)
 
 ## Row
 
-### sdkjkljds
+### Chroma Analysis of selected songs
+Below are chroma plots showing interesting patterns in selected songs from my corpus.
 
-sdkljfl;asjd;lkfj;laskjdf
+##### Fishmans - LONG SEASON
+LONG SEASON is a 35.17 minutes song that contains multiple sections that flow into each other. At the red lines a clear transition between these sections is visible. Although there are more, some sections blend over such a long period that the transitions become hard to annotate (as is visible in the section after the first red line)
 
+##### F# A# ∞ - The Dead Flag Blues
+The Dead Flag Blues another example of a song that is unique in it's presentation. It sets an ominous stage trough it use of multiple monologue sections. This is further emphasized in the annotated section (between the red lines); a long, slow decending scale followed by an ascending  scale over a period of around 400 seconds.
+
+##### World is Yours - Nan Nan
+World is your is the album with the highest average energy level and Nan Nan should be a very good example of that. However, the Chroma shows something slightly different; very fast sections followed by relatively slower section. This likely means that the fast sections and the instruments used are responsible for the high energy levels.
+
+
+##### Drowning in the sewer - Hopelessness/ Slowdeath
+Hoplessness and Slowdeath are both by the same artist, whose genre is hard to define but lays somewhere between ambient and breakcore. The cool thing about these two Chorma's is that both genres are clearly visible. The Darker sections are more ambient and slow, whilst the bright sections lean more towards breakcore and are very fast.
 
 ## Column {.tabset .tabset-fade}
 
-### Chroma 1
+### LONG SEASON Chroma
 
 ```{r, echo=FALSE, fig.width=15, fig.height=4}
 # Hopelessness 5gTGFOB8RIihsPxfIC0OtH
@@ -179,13 +208,15 @@ rainseason |>
   geom_vline(xintercept = 150, color = "red", size = 1) +
   geom_vline(xintercept = 1010, color = "red", size = 1) +
   geom_vline(xintercept = 1240, color = "red", size = 1) +
+  geom_vline(xintercept = 1565, color = "red", size = 1) +
+  geom_vline(xintercept = 1670, color = "red", size = 1) +
   labs(x = "Time (s)", y = NULL, fill = "Magnitude") +
   theme_minimal() +
   scale_fill_viridis_c()
 
 ```
 
-### Chroma 2
+### The Dead Flag Blues Chroma 
 
 ```{r, echo=FALSE, fig.width=15, fig.height=4}
 thedeadflagblues <-
@@ -214,7 +245,7 @@ thedeadflagblues |>
 
 ```
 
-### Chroma 3
+### Nan Nan Chroma
 
 ```{r, echo=FALSE, fig.width=15, fig.height=4}
 nannan <-
@@ -236,12 +267,14 @@ nannan |>
   ) +
   geom_tile() +
   labs(x = "Time (s)", y = NULL, fill = "Magnitude") +
+  geom_vline(xintercept = 83, color = "red", size = 1) +
+  geom_vline(xintercept = 120, color = "red", size = 1) +
   theme_minimal() +
   scale_fill_viridis_c()
 
 ```
 
-### Chroma 4
+### Hopelessness Chroma
 
 ```{r, echo=FALSE, fig.width=15, fig.height=4}
 hopelessness <-
@@ -271,7 +304,7 @@ hopelessness |>
 
 ```
 
-### Chroma 5
+### Slowdeath Chroma
 
 ```{r, echo=FALSE, fig.width=15, fig.height=4}
 slowdeath <-
@@ -298,19 +331,19 @@ slowdeath |>
 
 ```
 
-## Row
+## Row 
 
 ### Dynamic Time Wrapping
 
-In DTW 1 I have compared the live version of underwater by elephant gym to their studio performance. The graph shows us that the two versions are very similar to each other by the apparent diagonal line. 
+In Underwater DTW I have compared the live version of underwater by elephant gym to their studio performance. The graph shows us that the two versions are very similar to each other by the apparent diagonal line. 
 That the 2 versions are so similar is not strange at all as Underwater is a math-rock song. This means that the song is performed by a band where typically the drummer and/or the bass decides the rhythm and tempo at which the whole band plays. If the rhythm/tempo is slightly off the whole song will 'fall apart', so keeping a consistent rhythm and tempo is crucial to a performance. 
 That being said, the 2 songs do still differ, just not in rhythm or tempo. Rather, they differ in timber and sound stage. likely due to how/where they were recorded and things like the effects the instruments used (a.e. guitar pedals) or ones that were added later. 
 
 
 
-### DTW 1
+### Underwater DTW
 
-```{r, echo=FALSE, fig.width=10, fig.height=10}
+```{r, echo=FALSE, fig.height = 10, fig.weight=10}
 # underwater live 01aYWPwgS52VhujkRnQn6p
 # underwater 3bZaxtkOP7zxmHtS3d4n2X
 # finger live 5KufVu7rjJXEBCFuvaXaeF
@@ -346,7 +379,6 @@ compmus_long_distance(
   geom_tile() +
   coord_equal() +
   labs(x = "Underwater", y = "Underwater live version") +
-  theme(axis.title = element_text(size=20))+
   theme_minimal() +
   scale_fill_viridis_c(guide = NULL)
 
