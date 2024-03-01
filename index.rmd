@@ -11,6 +11,7 @@ output:
     vertical_layout: scroll
 ---
 
+```{=html}
 <style>
 .dataTables_scrollBody {
     height:540px !important;
@@ -19,6 +20,7 @@ output:
     overflow:auto !important;
 }
 </style>
+```
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -51,15 +53,15 @@ corpus |>
 
 # Corpus
 
-## Column 
+## Column
 
 ### Corpus Description {style="min-height:400px"}
 
 The corpus for this musical analysis consists of a collection of albums (see Appendix) that I chose based on my personal interest. I chose albums specifically, as it is the form in which I consume most of my music, but it will also ensure that the overlap in musical genres is more consistent between songs. This does however mean that the analysis will focus more on the difference between the albums as opposed to differences between individual songs. As for the corpus, it consists of a variety of genres including rock, pop, post-rock, ambient, shoegaze, neo-psychedelia, hip-hop. At first glance it might seem as if there is little overlap between the album’s genres, however, most can be categorized in either rock, ambient, pop, or hip-hop. Though there are some album’s that can be considered atypical for these categories, for example LONG SEASON by the Fishmans. This album consists of a single 35-minute song and incorporates a variety of genres into one. Another example is REGRET WHEN IT WAS LOST by death’s dynamic shroud which at points blurs the line between surrealism and music. Or F# A# ∞ by Godspeed You! Black Emperor, an album containing multiple monologues throughout the song creating an eerie vibe. I chose to incorporate these albums not only because they are some of my personal favorites but also for their uniqueness, which should hopefully lead to a more interesting analysis. The corpus contains many more such examples, which I will cover further in the analysis. However, most of the corpus consists of more typical genre representative albums, for example the albums made by; Radiohead, No Party For Coa Dong, tricot, Pink Floyd, Polyphia and Panchiko, are more typical to rock. So, all in all, the corpus consists of a combination of typical and atypical albums which should lead to an interesting analysis of the distinctions an overlap between genres and individual albums/songs.
 
-### Appendix (album - artist) 
+### Appendix (album - artist)
 
-``` {r, echo=FALSE}
+```{r, echo=FALSE}
 appendix <- corpus %>%
   select(track.album.name, track.artists, track.name, track.album.release_date)
 
@@ -83,11 +85,11 @@ appendix <- subset(appendix, select = -track.artists)
 datatable(appendix, style = "auto", colnames = c("Album", "Track Name", "Release Date", "Artist"))
 ```
 
-# Global Analysis {data-navmenu=Analysis}
+# Global Analysis {data-navmenu="Analysis" data-orientation=rows}
 
-## Column {data-width="350"}
+## Row {style="min-height:600px"}
 
-### Analysis over the entire range of songs {style="min-height:1200px"}
+### Analysis over the entire range of songs {data-width="350"} 
 
 #### Plot A
 
@@ -97,9 +99,7 @@ Plot 1 shows a comparrison of the liveness, acousticness and the speechness of e
 
 Plot 2 shows the mean energy levels of all albums in decending order. What is interesting about this plot is that the albums seems to contain nearly the entire range of the energy spectrum, all the way from A I A: Alien Observer at a level of around 0.13 to World is Yours at almost 1, with an overall mean of around 0.6.
 
-## Column {data-width="650"}
-
-### Plot A {style="min-height:600px"}
+### Plot A {data-width="650"}
 
 ```{r, echo=FALSE}
 corpus_with_title <- 
@@ -122,9 +122,11 @@ multi_plot_1 <- ggplot(corpus_with_title, aes(x = liveness, y = acousticness, co
 ggplotly(multi_plot_1, tooltip = c("x", "y", "label", "size"))
 ```
 
-### Plot B {style="min-height:600px"}
+## Row  {.tabset .tabset-fade style="min-height:600px"}
 
-```{r, echo=FALSE, style="margin-left:-400px"}
+### Plot B 
+
+```{r, echo=FALSE}
 corpus_energy <- corpus %>% 
   group_by(track.album.name) %>%
   summarize(album_energy=mean(energy))
@@ -158,6 +160,45 @@ energy_plot_1 <- ggplot(corpus_energy, aes(x = album_energy, y = reorder(track.a
 ggplotly(energy_plot_1)
 
 ```
+
+### Plot C 
+
+```{r, echo=FALSE}
+corpus_acousticness <- corpus %>% 
+  group_by(track.album.name) %>%
+  summarize(album_acousticness=mean(acousticness))
+
+global_mean <- mean(corpus$acousticness)
+
+acousticness_plot_1 <- ggplot(corpus_acousticness, aes(x = album_acousticness, y = reorder(track.album.name, album_acousticness), color = album_acousticness)) +
+  geom_point(size = 3) +
+  geom_vline(xintercept = global_mean, color = "grey40", linetype = 3) +
+  geom_segment(aes(xend = 0, yend = track.album.name), size = 2) + 
+  theme_classic() +
+  theme(legend.position = 'none', plot.margin = margin(l = -1000, r = 0, t = 0, b = 0, unit = "pt")) +
+  labs(x = "Album's Mean Acousticness",
+       y = "Album",
+       title = "Albums ranked on their mean acousticness level") + 
+  annotate(
+    "text",
+    x = global_mean + 0.06, y = 8,
+    label = "Global\nmean",
+    vjust = 1, size = 3, color = "grey40"
+  ) +
+  theme(
+    axis.line.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    axis.title = element_blank(),
+    panel.grid = element_blank(),
+    plot.subtitle = element_text(size = 9)
+  ) +
+  scale_color_gradient(low = "red", high = "orange")
+  
+
+ggplotly(acousticness_plot_1)
+
+```
+
 
 # Individual Songs {data-navmenu=Analysis data-orientation=rows}
 
@@ -208,7 +249,7 @@ rainseason <-
   get_tidy_audio_analysis("08b1bCjsKjMzhjBm0qhkof") |>
   select(segments) |>
   unnest(segments) |>
-  select(start, duration, pitches)
+  select(start, duration, pitches, timbre)
 
 rainseason |>
   mutate(pitches = map(pitches, compmus_normalise, "euclidean")) |>
@@ -350,7 +391,7 @@ slowdeath |>
 
 ## Row {style="min-height:600px"}
 
-### Dynamic Time WrappingS
+### Dynamic Time Wrapping
 
 In Underwater DTW I have compared the live version of underwater by elephant gym to their studio performance. The graph shows us that the two versions are very similar to each other by the apparent diagonal line.
 That the 2 versions are so similar is not strange at all as Underwater is a math-rock song. This means that the song is performed by a band where typically the drummer and/or the bass decides the rhythm and tempo at which the whole band plays. If the rhythm/tempo is slightly off the whole song will 'fall apart', so keeping a consistent rhythm and tempo is crucial to a performance.
@@ -399,6 +440,66 @@ compmus_long_distance(
   theme_minimal() +
   scale_fill_viridis_c(guide = NULL)
 
+
+```
+
+## Row 
+
+### Analysis of the Timber and Chroma of 進化 by 猫 シ Corp. and t e l e p a t h テレパシー能力者 {style="min-height:600px"}
+
+The Self-similarity plot shows the timber and chromagram of 進化 by 猫 シ Corp. and t e l e p a t h テレパシー能力者. I chose this song as it was has the highest liveness recorded by Spotify of any song in the corpus (see Plot A on the 'Global Analysis' tab). 
+What is interesting about this classification is that this song is not a live recording in the slightest. Then, why? well, the classification is likely due to the apparent outside noise in the song, you see, 進化 (translated = evolution) is an ambient focused song that incorporates sounds like fire and noise from train stations. This likely confuses the Spotify algorithm to where it classifies the song incorrectly as having a high liveness.
+The Timbre and Chroma similarity matrix sadly don't really bring forth the liveness, however, they do show the repeating pattern in the song very clearly. The Chroma creates an almost checkerboard like structure, whilst the timbre shows fade in and fade out that the song makes. This fading pattern is especially visible towards the beginning and start of the song.
+
+### Self-similarity Timber and Chromagram {style="min-height=600px"}
+
+```{r, echo=FALSE}
+
+# BaBW eennaarlaatstetrack 6wemF0lNDZUnZE4DE2BD0t
+
+evolution <-
+  get_tidy_audio_analysis("6wemF0lNDZUnZE4DE2BD0t") |>
+  compmus_align(bars, segments) |>
+  select(bars) |>
+  unnest(bars) |>
+  mutate(
+    pitches =
+      map(segments,
+        compmus_summarise, pitches,
+        method = "acentre", norm = "manhattan"
+      )
+  ) |>
+  mutate(
+    timbre =
+      map(segments,
+        compmus_summarise, timbre,
+        method = "mean"
+      )
+  )
+bind_rows(
+  evolution |>
+    compmus_self_similarity(pitches, "aitchison") |>
+    mutate(d = d / max(d), type = "Chroma"),
+  evolution |>
+    compmus_self_similarity(timbre, "euclidean") |>
+    mutate(d = d / max(d), type = "Timbre")
+) |>
+  mutate() |>
+  ggplot(
+    aes(
+      x = xstart + xduration / 2,
+      width = xduration,
+      y = ystart + yduration / 2,
+      height = yduration,
+      fill = d
+    )
+  ) +
+  geom_tile() +
+  coord_fixed() +
+  facet_wrap(~type) +
+  scale_fill_viridis_c(guide = "none") +
+  theme_classic() +
+  labs(x = "", y = "")
 ```
 
 # Findings
