@@ -8,8 +8,17 @@ output:
     theme:
       version: 4
       bootswatch: minty
-    vertical_layout: fill
+    vertical_layout: scroll
 ---
+
+<style>
+.dataTables_scrollBody {
+    height:540px !important;
+}
+.chart-stage-flex {
+    overflow:auto !important;
+}
+</style>
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -44,33 +53,41 @@ corpus |>
 
 ## Column 
 
-### Corpus Description
+### Corpus Description {style="min-height:400px"}
 
 The corpus for this musical analysis consists of a collection of albums (see Appendix) that I chose based on my personal interest. I chose albums specifically, as it is the form in which I consume most of my music, but it will also ensure that the overlap in musical genres is more consistent between songs. This does however mean that the analysis will focus more on the difference between the albums as opposed to differences between individual songs. As for the corpus, it consists of a variety of genres including rock, pop, post-rock, ambient, shoegaze, neo-psychedelia, hip-hop. At first glance it might seem as if there is little overlap between the album’s genres, however, most can be categorized in either rock, ambient, pop, or hip-hop. Though there are some album’s that can be considered atypical for these categories, for example LONG SEASON by the Fishmans. This album consists of a single 35-minute song and incorporates a variety of genres into one. Another example is REGRET WHEN IT WAS LOST by death’s dynamic shroud which at points blurs the line between surrealism and music. Or F# A# ∞ by Godspeed You! Black Emperor, an album containing multiple monologues throughout the song creating an eerie vibe. I chose to incorporate these albums not only because they are some of my personal favorites but also for their uniqueness, which should hopefully lead to a more interesting analysis. The corpus contains many more such examples, which I will cover further in the analysis. However, most of the corpus consists of more typical genre representative albums, for example the albums made by; Radiohead, No Party For Coa Dong, tricot, Pink Floyd, Polyphia and Panchiko, are more typical to rock. So, all in all, the corpus consists of a combination of typical and atypical albums which should lead to an interesting analysis of the distinctions an overlap between genres and individual albums/songs.
 
-### Appendix (album - artist)
+### Appendix (album - artist) 
 
-```{r, echo=FALSE}
+``` {r, echo=FALSE}
 appendix <- corpus %>%
-  select(track.album.name, track.name, track.album.release_date)
+  select(track.album.name, track.artists, track.name, track.album.release_date)
 
-# # a <- appendix[2, "track.album.id"]%>% pull(track.album.id) nrow(appendix)
-# for( i in 1:1){
-#   a <- unlist(appendix[i, "track.artists"])
-#   print(gregexec("([[:alpha:]]+)([[:digit:]]+)", a))
-#   appendix[i, "artist"] <- appendix[i, "track.artists"][[1]]
-# }
-# 
-# 
-# glimpse(appendix)
-datatable(appendix, height = 200, style = "auto", colnames = c("Album", "Track Name", "Release Date"))
+artists <- lapply(appendix$track.artists, function(x) x$name)
+
+for( i in 1:nrow(appendix)){
+  name <- artists[i][[1]]
+  
+  if (length(name) > 1){
+    for(j in length(name)){
+      name <- paste(name[j-1], name[j], sep = ", ")
+    }
+  }
+  
+  appendix[i, "artist"] <- name
+}
+
+appendix <- subset(appendix, select = -track.artists)
+
+
+datatable(appendix, style = "auto", colnames = c("Album", "Track Name", "Release Date", "Artist"))
 ```
 
 # Global Analysis {data-navmenu=Analysis}
 
 ## Column {data-width="350"}
 
-### Analysis over the entire range of songs
+### Analysis over the entire range of songs {style="min-height:1200px"}
 
 #### Plot A
 
@@ -82,7 +99,7 @@ Plot 2 shows the mean energy levels of all albums in decending order. What is in
 
 ## Column {data-width="650"}
 
-### Plot A
+### Plot A {style="min-height:600px"}
 
 ```{r, echo=FALSE}
 corpus_with_title <- 
@@ -105,9 +122,9 @@ multi_plot_1 <- ggplot(corpus_with_title, aes(x = liveness, y = acousticness, co
 ggplotly(multi_plot_1, tooltip = c("x", "y", "label", "size"))
 ```
 
-### Plot B
+### Plot B {style="min-height:600px"}
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, style="margin-left:-400px"}
 corpus_energy <- corpus %>% 
   group_by(track.album.name) %>%
   summarize(album_energy=mean(energy))
@@ -119,7 +136,7 @@ energy_plot_1 <- ggplot(corpus_energy, aes(x = album_energy, y = reorder(track.a
   geom_vline(xintercept = global_mean, color = "grey40", linetype = 3) +
   geom_segment(aes(xend = 0, yend = track.album.name), size = 2) + 
   theme_classic() +
-  theme(legend.position = 'none') +
+  theme(legend.position = 'none', plot.margin = margin(l = -1000, r = 0, t = 0, b = 0, unit = "pt")) +
   labs(x = "Album's Mean Energy",
        y = "Album",
        title = "Albums ranked on their mean energy level") + 
@@ -195,7 +212,7 @@ rainseason <-
 
 rainseason |>
   mutate(pitches = map(pitches, compmus_normalise, "euclidean")) |>
-  compmus_gather_chroma() |> 
+  compmus_gather_chroma() |>
   ggplot(
     aes(
       x = start + duration / 2,
@@ -216,7 +233,7 @@ rainseason |>
 
 ```
 
-### The Dead Flag Blues Chroma 
+### The Dead Flag Blues Chroma
 
 ```{r, echo=FALSE, fig.width=15, fig.height=4}
 thedeadflagblues <-
@@ -227,7 +244,7 @@ thedeadflagblues <-
 
 thedeadflagblues |>
   mutate(pitches = map(pitches, compmus_normalise, "euclidean")) |>
-  compmus_gather_chroma() |> 
+  compmus_gather_chroma() |>
   ggplot(
     aes(
       x = start + duration / 2,
@@ -256,7 +273,7 @@ nannan <-
 
 nannan |>
   mutate(pitches = map(pitches, compmus_normalise, "euclidean")) |>
-  compmus_gather_chroma() |> 
+  compmus_gather_chroma() |>
   ggplot(
     aes(
       x = start + duration / 2,
@@ -285,7 +302,7 @@ hopelessness <-
 
 hopelessness |>
   mutate(pitches = map(pitches, compmus_normalise, "euclidean")) |>
-  compmus_gather_chroma() |> 
+  compmus_gather_chroma() |>
   ggplot(
     aes(
       x = start + duration / 2,
@@ -315,7 +332,7 @@ slowdeath <-
 
 slowdeath |>
   mutate(pitches = map(pitches, compmus_normalise, "euclidean")) |>
-  compmus_gather_chroma() |> 
+  compmus_gather_chroma() |>
   ggplot(
     aes(
       x = start + duration / 2,
@@ -331,19 +348,19 @@ slowdeath |>
 
 ```
 
-## Row 
+## Row {style="min-height:600px"}
 
-### Dynamic Time Wrapping
+### Dynamic Time WrappingS
 
-In Underwater DTW I have compared the live version of underwater by elephant gym to their studio performance. The graph shows us that the two versions are very similar to each other by the apparent diagonal line. 
-That the 2 versions are so similar is not strange at all as Underwater is a math-rock song. This means that the song is performed by a band where typically the drummer and/or the bass decides the rhythm and tempo at which the whole band plays. If the rhythm/tempo is slightly off the whole song will 'fall apart', so keeping a consistent rhythm and tempo is crucial to a performance. 
-That being said, the 2 songs do still differ, just not in rhythm or tempo. Rather, they differ in timber and sound stage. likely due to how/where they were recorded and things like the effects the instruments used (a.e. guitar pedals) or ones that were added later. 
+In Underwater DTW I have compared the live version of underwater by elephant gym to their studio performance. The graph shows us that the two versions are very similar to each other by the apparent diagonal line.
+That the 2 versions are so similar is not strange at all as Underwater is a math-rock song. This means that the song is performed by a band where typically the drummer and/or the bass decides the rhythm and tempo at which the whole band plays. If the rhythm/tempo is slightly off the whole song will 'fall apart', so keeping a consistent rhythm and tempo is crucial to a performance.
+That being said, the 2 songs do still differ, just not in rhythm or tempo. Rather, they differ in timber and sound stage. likely due to how/where they were recorded and things like the effects the instruments used (a.e. guitar pedals) or ones that were added later.
 
 
 
 ### Underwater DTW
 
-```{r, echo=FALSE, fig.height = 10, fig.weight=10}
+```{r, echo=FALSE}
 # underwater live 01aYWPwgS52VhujkRnQn6p
 # underwater 3bZaxtkOP7zxmHtS3d4n2X
 # finger live 5KufVu7rjJXEBCFuvaXaeF
