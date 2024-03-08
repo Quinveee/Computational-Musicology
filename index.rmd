@@ -268,7 +268,13 @@ ggplotly(genresPlot)
 
 ### Rock vs Ambient
 
-In the plot below I compared the rock albums "World Is Yours", "MASS OF THE FERMENTING DREGS", "T H E", "醜奴兒" and "In Rainbows" to the ambient albums A I A: Alien Observer", "Building a Better World", "Music Has The Right To Children", "小圈子" and "新しい日の誕生". 
+In the plot below I compared the rock albums "World Is Yours", "MASS OF THE FERMENTING DREGS", "T H E", "醜奴兒" and "In Rainbows" to the ambient albums "A I A: Alien Observer", "Building a Better World", "Music Has The Right To Children", "小圈子" and "新しい日の誕生". 
+As you might notice, the genres in the [appendix](#Corpus) do not directly classify some of the albums as rock or ambient. This is due to the way that Spotify classifies genres, as Spotify assign a genre to the artist, not the album. Furthermore, Spotify is also very specific when it comes to genres resulting in a large sum of non matching genres (see the [genre distrubution plot](### All Genres and Their Frequency)). That is why i used the Spotify genres in combination with the genres classified by one of the largest music database: [Rate Your Music](https://rateyourmusic.com/).
+
+The right plot give a suprising result; the mean tempo (and it's standard deviation) of ambient and rock are not far off. While it does appear that ambient is slightly shifted to the lower bpm than rock, they still are very close. Where we can see a difference is in the volume and duration, ambient tracks appear to be longer and at a lower volume than rock. 
+
+The left plot shows that there is quite a bit of variation between rock and ambient when it comes to the different octaves and thei timber, which is most noticeable at c01, c02, c05 and c06. This might give a clue as to why the genres appear so similar in the right plot, yet sound and feel so different.
+
 
 ## Row {style="min-height:600px"}
 
@@ -405,7 +411,7 @@ comp |>
 
 ```
 
-### Timbre Coeffiecients of Ambient Compared to Rock 
+### Timbre Coeffiecients at Different Octaves
 
 ```{r, echo=FALSE}
 comp |> mutate(
@@ -745,7 +751,7 @@ bind_rows(
 "The Color Of Fire" by Boards of Canada is a perfect representation of the surrealistic, creepy and weirdly nostalgic feeling that the album "Music Has the Right to Children" presents. 
 The song has a clear progression, starting at B7, then Eb seventh, Gb seventh, Ab seventh and back to B7 (followed by a fade off), which the Chordogram plotted below shows very clearly.
 
-##### Chordogram - The Color Of Fire 
+##### Chordogram - The Color Of Fire {style="justify-content:center"}
 
 ```{r, echo=FALSE, fig.width=15}
 thecoloroffire <-
