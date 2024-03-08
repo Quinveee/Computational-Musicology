@@ -738,6 +738,50 @@ bind_rows(
   labs(x = "", y = "")
 ```
 
+## Row {style="min-height:150px"}
+
+### The Color Of Fire
+
+"The Color Of Fire" by Boards of Canada is a perfect representation of the surrealistic, creepy and weirdly nostalgic feeling that the album "Music Has the Right to Children" presents. 
+The song has a clear progression, starting at B7, then Eb seventh, Gb seventh, Ab seventh and back to B7 (followed by a fade off), which the Chordogram plotted below shows very clearly.
+
+##### Chordogram - The Color Of Fire 
+
+```{r, echo=FALSE, fig.width=15}
+thecoloroffire <-
+  get_tidy_audio_analysis("5dm5vtne8lx8BPrVamK6S1") |>
+  compmus_align(sections, segments) |>
+  select(sections) |>
+  unnest(sections) |>
+  mutate(
+    pitches =
+      map(segments,
+        compmus_summarise, pitches,
+        method = "mean", norm = "manhattan"
+      )
+    )
+
+thecoloroffire |>
+  compmus_match_pitch_template(
+    chord_templates,
+    method = "euclidean",
+    norm = "manhattan"
+  ) |>
+  ggplot(
+    aes(x = start + duration / 2, width = duration, y = name, fill = d)
+  ) +
+  geom_tile() +
+  scale_fill_viridis_c(guide = "none") +
+  theme_minimal() +
+  labs(x = "Time (s)", y = "") +
+  geom_vline(xintercept = 9, color = "red", size = 2) + 
+  geom_vline(xintercept = 45, color = "orange", size = 2) + 
+  geom_vline(xintercept = 60, color = "green", size = 2) + 
+  geom_vline(xintercept = 79, color = "magenta", size = 2)  
+  
+
+```
+
 # Findings
 
 ## Column
