@@ -262,7 +262,13 @@ genresPlot <- ggplot(input_genres, aes(genre)) +
 ggplotly(genresPlot)
 ```
 
-# Album Comparisons {data-navmenu="Analysis" data-orientation=rows}
+# Album & Genre Comparisons {data-navmenu="Analysis" data-orientation=rows}
+
+## Row {style="min-height:300px"}
+
+### Rock vs Ambient
+
+In the plot below I compared the rock albums "World Is Yours", "MASS OF THE FERMENTING DREGS", "T H E", "醜奴兒" and "In Rainbows" to the ambient albums A I A: Alien Observer", "Building a Better World", "Music Has The Right To Children", "小圈子" and "新しい日の誕生". 
 
 ## Row {style="min-height:600px"}
 
@@ -354,7 +360,7 @@ key_templates <-
   )
 ```
 
-### Compring Rock to Ambient
+### Tempo with Duration & Volume
 
 ``` {r, echo=FALSE}
 aiaobserver <- filter(corpus, track.album.name %in% c("A I A: Alien Observer", "Building a Better World", "Music Has The Right To Children", "小圈子", "新しい日の誕生")) |> add_audio_analysis()
@@ -397,7 +403,6 @@ comp |>
     alpha = "Volume (dBFS)"
   )
 
-
 ```
 
 ### Timbre Coeffiecients of Ambient Compared to Rock 
@@ -416,7 +421,7 @@ comp |> mutate(
   compmus_gather_timbre() |>
   ggplot(aes(x = basis, y = value, fill = genre)) +
   geom_violin() +
-  scale_fill_viridis_d() +
+  scale_fill_manual(values = c("#f3969a", "#78c2ad")) +
   labs(x = "Spotify Timbre Coefficients", y = "", fill = "Genre")
 
 ```
