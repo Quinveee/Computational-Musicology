@@ -135,7 +135,7 @@ The multivariate analysis plot shows a comparison of the liveness, acousticness 
 
 #### Differences in energy
 
-The energy ranking plot shows the mean energy levels of all albums in descending order. What is interesting about this plot is that the albums seems to contain nearly the entire range of the energy spectrum, all the way from A I A: Alien Observer at a level of around 0.13 to World is Yours at almost 1, with an overall mean of around 0.6.
+The energy ranking plot below shows the mean energy levels of all albums in descending order. What is interesting about this plot is that the albums seems to contain nearly the entire range of the energy spectrum, all the way from A I A: Alien Observer at a level of around 0.13 to World is Yours at almost 1, with an overall mean of around 0.6.
 
 #### Differences in acousticness
 
@@ -276,11 +276,12 @@ ggplotly(genresPlot)
 ### Rock vs Ambient
 
 In the plot below I compared the rock albums "World Is Yours", "MASS OF THE FERMENTING DREGS", "T H E", "醜奴兒" and "In Rainbows" to the ambient albums "A I A: Alien Observer", "Building a Better World", "Music Has The Right To Children", "小圈子" and "新しい日の誕生". 
-As you might notice, the genres in the [appendix](#Corpus) do not directly classify some of the albums as rock or ambient. This is due to the way that Spotify classifies genres, as Spotify assign a genre to the artist, not the album. Furthermore, Spotify is also very specific when it comes to genres resulting in a large sum of non matching genres (see the [genre distrubution plot](### All Genres and Their Frequency)). That is why i used the Spotify genres in combination with the genres classified by one of the largest music database: [Rate Your Music](https://rateyourmusic.com/).
+As you might notice, the genres in the [appendix](#corpus) do not directly classify some of the albums as rock or ambient. This is due to the way that Spotify classifies genres, you see, Spotify assigns a genre to the artist, not the album. Furthermore, Spotify is also very specific when it comes to genres resulting in a large sum of non matching genres (see the [genre distrubution plot](#global-analysis)). That is why i used the Spotify genres in combination with the genres classified by one of the largest music database: [Rate Your Music](https://rateyourmusic.com/).
 
-The right plot give a suprising result; the mean tempo (and it's standard deviation) of ambient and rock are not far off. While it does appear that ambient is slightly shifted to the lower bpm than rock, they still are very close. Where we can see a difference is in the volume and duration, ambient tracks appear to be longer and at a lower volume than rock. 
+The resulting right plot gives a surprising result; the mean tempo (and it's standard deviation) of ambient and rock are not far off. While it does appear that ambient is slightly shifted to a lower bpm than rock, they are still very close. 
+Where we can see a difference is in the volume and duration; ambient tracks appear to be longer and at a lower volume than rock. 
 
-The left plot shows that there is quite a bit of variation between rock and ambient when it comes to the different octaves and thei timber, which is most noticeable at c01, c02, c05 and c06. This might give a clue as to why the genres appear so similar in the right plot, yet sound and feel so different.
+The left plot tells a different story, it shows that there is quite a bit of variation between rock and ambient when it comes to the different octaves and their timber, which is most noticeable at c01, c02, c05 and c06. This might give a clue as to why the genres appear so similar in the right plot, yet sound and feel so different.
 
 
 ## Row {style="min-height:600px"}
