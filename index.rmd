@@ -4,11 +4,11 @@ output:
   flexdashboard::flex_dashboard:
     orientation: columns
     source_code: "https://github.com/Quinveee/Computational-Musicology"
-    css: style.css
     theme:
       version: 4
       bootswatch: minty
     vertical_layout: scroll
+    css: style.css
 ---
 
 ```{=html}
@@ -127,17 +127,24 @@ datatable(appendix, style = "auto", colnames = c("Album", "Track Name", "Release
 
 ## Row {style="min-height:600px"}
 
-### Analysis over the entire range of songs {data-width="350"} 
+### Description {data-width="350"} 
 
-#### Plot A
+#### Analysis over the entire range of songs
 
-Plot 1 shows a comparrison of the liveness, acousticness and the speechness of each individual song. What is interesting about the plot is that there appears to be verry little acousticness and speechness. This is relativally odd as many of the songs should contain speech, furthermore, the liveness seems rather low, possebly due to the amount of ambient music, but what is then even more odd is the fact that many of the songs with the highest liveness are ambient songs (this may be due to Spotify's algorithm not fully comprehending ambient music). The acousticness on the other hand seems all over the place, likely due to the fast differences in genres.
+The multivariate analysis plot shows a comparison of the liveness, acousticness and the speechness of each individual song. What is interesting about the plot is that there appears to be very little acousticness and speechness. This is relatively odd as many of the songs should contain speech, furthermore, the liveness seems rather low, possibly due to the amount of ambient music, but what is then even more odd is the fact that many of the songs with the highest liveness are ambient songs (this may be due to Spotify's algorithm not fully comprehending ambient music). The acousticness on the other hand seems all over the place, likely due to the fast differences in genres.
 
-#### Plot B
+#### Differences in energy
 
-Plot 2 shows the mean energy levels of all albums in decending order. What is interesting about this plot is that the albums seems to contain nearly the entire range of the energy spectrum, all the way from A I A: Alien Observer at a level of around 0.13 to World is Yours at almost 1, with an overall mean of around 0.6.
+The energy ranking plot shows the mean energy levels of all albums in descending order. What is interesting about this plot is that the albums seems to contain nearly the entire range of the energy spectrum, all the way from A I A: Alien Observer at a level of around 0.13 to World is Yours at almost 1, with an overall mean of around 0.6.
 
-### Plot A {data-width="650"}
+#### Differences in acousticness
+
+The acousticness ranking shows the mean acousticness levels of all albums in descending order, the pattern of which appears to be the complete opposite of the energy ranking, with most ambient leaning albums at the top of the chart and rock leaning albums to the bottom. 
+For the rock to have a low acousticness seems very normal, as many rock albums use electric guitars, basses, synthesizers etc. However, for ambient leaning albums to be ranked so high on acousticness seems strange. Take for instance 新しい日の誕生 (the album with the second highest acousticness), an album that can be classified as ambient/ dreampunk that has almost no acousticness to it, in fact the only part that seems acoustic is the drums that play in the background of some songs, the rest is all clearly non-acoustic. 
+This classification clearly encapsulates the limitations to the Spotify api, namely; Spotify does not give enough information on how the different attributes are calculated and what they mean. So it may be that this outcome is normal if Spotify considers a song a acoustic when one instrument appears to be acoustic, but we cannot be for certain. 
+
+
+### Multivariate Analysis {data-width="650"}
 
 ```{r, echo=FALSE}
 corpus_with_title <- 
@@ -162,7 +169,7 @@ ggplotly(multi_plot_1, tooltip = c("x", "y", "label", "size"))
 
 ## Row  {.tabset .tabset-fade style="min-height:600px"}
 
-### Plot B 
+### Energy Ranking
 
 ```{r, echo=FALSE}
 corpus_energy <- corpus %>% 
@@ -199,7 +206,7 @@ ggplotly(energy_plot_1)
 
 ```
 
-### Plot C 
+### Acousticness Ranking
 
 ```{r, echo=FALSE}
 corpus_acousticness <- corpus %>% 
@@ -744,16 +751,16 @@ bind_rows(
   labs(x = "", y = "")
 ```
 
-## Row {style="min-height:150px"}
+## Row {style="min-height:400px"}
 
-### The Color Of Fire
+### The Color Of Fire {data-width="350" style="min-height:150px"}
 
 "The Color Of Fire" by Boards of Canada is a perfect representation of the surrealistic, creepy and weirdly nostalgic feeling that the album "Music Has the Right to Children" presents. 
 The song has a clear progression, starting at B7, then Eb seventh, Gb seventh, Ab seventh and back to B7 (followed by a fade off), which the Chordogram plotted below shows very clearly.
 
-##### Chordogram - The Color Of Fire {style="justify-content:center"}
+### Chordogram - The Color Of Fire
 
-```{r, echo=FALSE, fig.width=15}
+```{r, echo=FALSE, fig.width=13}
 thecoloroffire <-
   get_tidy_audio_analysis("5dm5vtne8lx8BPrVamK6S1") |>
   compmus_align(sections, segments) |>
