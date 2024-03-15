@@ -9,6 +9,7 @@ output:
       bootswatch: minty
     vertical_layout: scroll
     css: style.css
+    runtime: shiny 
 ---
 
 ```{=html}
@@ -32,6 +33,10 @@ library(flexdashboard)
 library(plotly)
 library(compmus)
 library(DT)
+
+```
+
+```{r, include=FALSE}
 
 corpus <- get_playlist_audio_features("", "75LhP6wXfee0eYHuW28nkw")
 corpus |>
@@ -59,7 +64,7 @@ corpus |>
 
 The corpus for this musical analysis consists of a collection of albums (see Appendix) that I chose based on my personal interest. I chose albums specifically, as it is the form in which I consume most of my music, but it will also ensure that the overlap in musical genres is more consistent between songs. This does however mean that the analysis will focus more on the difference between the albums as opposed to differences between individual songs. As for the corpus, it consists of a variety of genres including rock, pop, post-rock, ambient, shoegaze, neo-psychedelia, hip-hop. At first glance it might seem as if there is little overlap between the album’s genres, however, most can be categorized in either rock, ambient, pop, or hip-hop. Though there are some album’s that can be considered atypical for these categories, for example LONG SEASON by the Fishmans. This album consists of a single 35-minute song and incorporates a variety of genres into one. Another example is REGRET WHEN IT WAS LOST by death’s dynamic shroud which at points blurs the line between surrealism and music. Or F# A# ∞ by Godspeed You! Black Emperor, an album containing multiple monologues throughout the song creating an eerie vibe. I chose to incorporate these albums not only because they are some of my personal favorites but also for their uniqueness, which should hopefully lead to a more interesting analysis. The corpus contains many more such examples, which I will cover further in the analysis. However, most of the corpus consists of more typical genre representative albums, for example the albums made by; Radiohead, No Party For Coa Dong, tricot, Pink Floyd, Polyphia and Panchiko, are more typical to rock. So, all in all, the corpus consists of a combination of typical and atypical albums which should lead to an interesting analysis of the distinctions an overlap between genres and individual albums/songs.
 
-### Appendix (album - artist)
+### Appendix (album - artist) {style="min-height:750px"}
 
 ```{r, echo=FALSE}
 appendix <- corpus %>%
@@ -69,13 +74,13 @@ artists <- lapply(appendix$track.artists, function(x) x$name)
 
 for( i in 1:nrow(appendix)){
   name <- artists[i][[1]]
-  
+
   if (length(name) > 1){
     for(j in length(name)){
       name <- paste(name[j-1], name[j], sep = ", ")
     }
   }
-  
+
   appendix[i, "artist"] <- name
 }
 
@@ -96,9 +101,9 @@ for (i in 1:nrow(artistAlbumGenre_df)) {
     str <- strsplit(artist,", ")[[1]]
 
     for (j in str) {
-      
+
       temp <- as.list(search_spotify(j, 'artist')[[1]][1])
-      
+
       if (artistAlbumGenre_df[i, "genre"][[1]][1]  == "NULL" & identical(temp, character(0)) == FALSE) {
         artistAlbumGenre_df[i, "genre"] <- list(temp)
       }
@@ -127,7 +132,7 @@ datatable(appendix, style = "auto", colnames = c("Album", "Track Name", "Release
 
 ## Row {style="min-height:600px"}
 
-### Description {data-width="350"} 
+### Description {data-width="350"}
 
 #### Analysis over the entire range of songs
 
@@ -139,27 +144,27 @@ The energy ranking plot below shows the mean energy levels of all albums in desc
 
 #### Differences in acousticness
 
-The acousticness ranking shows the mean acousticness levels of all albums in descending order, the pattern of which appears to be the complete opposite of the energy ranking, with most ambient leaning albums at the top of the chart and rock leaning albums to the bottom. 
-For the rock to have a low acousticness seems very normal, as many rock albums use electric guitars, basses, synthesizers etc. However, for ambient leaning albums to be ranked so high on acousticness seems strange. Take for instance 新しい日の誕生 (the album with the second highest acousticness), an album that can be classified as ambient/ dreampunk that has almost no acousticness to it, in fact the only part that seems acoustic is the drums that play in the background of some songs, the rest is all clearly non-acoustic. 
-This classification clearly encapsulates the limitations to the Spotify api, namely; Spotify does not give enough information on how the different attributes are calculated and what they mean. So it may be that this outcome is normal if Spotify considers a song a acoustic when one instrument appears to be acoustic, but we cannot be for certain. 
+The acousticness ranking shows the mean acousticness levels of all albums in descending order, the pattern of which appears to be the complete opposite of the energy ranking, with most ambient leaning albums at the top of the chart and rock leaning albums to the bottom.
+For the rock to have a low acousticness seems very normal, as many rock albums use electric guitars, basses, synthesizers etc. However, for ambient leaning albums to be ranked so high on acousticness seems strange. Take for instance 新しい日の誕生 (the album with the second highest acousticness), an album that can be classified as ambient/ dreampunk that has almost no acousticness to it, in fact the only part that seems acoustic is the drums that play in the background of some songs, the rest is all clearly non-acoustic.
+This classification clearly encapsulates the limitations to the Spotify api, namely; Spotify does not give enough information on how the different attributes are calculated and what they mean. So it may be that this outcome is normal if Spotify considers a song a acoustic when one instrument appears to be acoustic, but we cannot be for certain.
 
 
 ### Multivariate Analysis {data-width="650"}
 
 ```{r, echo=FALSE}
-corpus_with_title <- 
+corpus_with_title <-
   corpus %>%
   mutate(title = paste(track.album.name, " - ", track.name))
 
 
 multi_plot_1 <- ggplot(corpus_with_title, aes(x = liveness, y = acousticness, color = speechiness, size = speechiness, label = title)) +
   geom_jitter(alpha = 0.7, width = 0.1) +
-  theme_classic() + 
-  scale_color_viridis_c() + 
+  theme_classic() +
+  scale_color_viridis_c() +
   guides(size = "none") +
   labs(title = "Comparison of Liveness, Acousticness and Speechness",
        subtitle = "The plot consists of the liveness, acousticness and speechness of all individual songs"
-  ) + 
+  ) +
   theme(
     legend.position = "Bottom"
   )
@@ -172,7 +177,7 @@ ggplotly(multi_plot_1, tooltip = c("x", "y", "label", "size"))
 ### Energy Ranking
 
 ```{r, echo=FALSE}
-corpus_energy <- corpus %>% 
+corpus_energy <- corpus %>%
   group_by(track.album.name) %>%
   summarize(album_energy=mean(energy))
 
@@ -181,12 +186,12 @@ global_mean <- mean(corpus$energy)
 energy_plot_1 <- ggplot(corpus_energy, aes(x = album_energy, y = reorder(track.album.name, album_energy), color = album_energy)) +
   geom_point(size = 3) +
   geom_vline(xintercept = global_mean, color = "grey40", linetype = 3) +
-  geom_segment(aes(xend = 0, yend = track.album.name), size = 2) + 
+  geom_segment(aes(xend = 0, yend = track.album.name), size = 2) +
   theme_classic() +
   theme(legend.position = 'none', plot.margin = margin(l = -1000, r = 0, t = 0, b = 0, unit = "pt")) +
   labs(x = "Album's Mean Energy",
        y = "Album",
-       title = "Albums ranked on their mean energy level") + 
+       title = "Albums ranked on their mean energy level") +
   annotate(
     "text",
     x = global_mean + 0.06, y = 8,
@@ -200,7 +205,7 @@ energy_plot_1 <- ggplot(corpus_energy, aes(x = album_energy, y = reorder(track.a
     panel.grid = element_blank(),
     plot.subtitle = element_text(size = 9)
   )
-  
+
 
 ggplotly(energy_plot_1)
 
@@ -209,7 +214,7 @@ ggplotly(energy_plot_1)
 ### Acousticness Ranking
 
 ```{r, echo=FALSE}
-corpus_acousticness <- corpus %>% 
+corpus_acousticness <- corpus %>%
   group_by(track.album.name) %>%
   summarize(album_acousticness=mean(acousticness))
 
@@ -218,12 +223,12 @@ global_mean <- mean(corpus$acousticness)
 acousticness_plot_1 <- ggplot(corpus_acousticness, aes(x = album_acousticness, y = reorder(track.album.name, album_acousticness), color = album_acousticness)) +
   geom_point(size = 3) +
   geom_vline(xintercept = global_mean, color = "grey40", linetype = 3) +
-  geom_segment(aes(xend = 0, yend = track.album.name), size = 2) + 
+  geom_segment(aes(xend = 0, yend = track.album.name), size = 2) +
   theme_classic() +
   theme(legend.position = 'none', plot.margin = margin(l = -1000, r = 0, t = 0, b = 0, unit = "pt")) +
   labs(x = "Album's Mean Acousticness",
        y = "Album",
-       title = "Albums ranked on their mean acousticness level") + 
+       title = "Albums ranked on their mean acousticness level") +
   annotate(
     "text",
     x = global_mean + 0.06, y = 8,
@@ -238,11 +243,63 @@ acousticness_plot_1 <- ggplot(corpus_acousticness, aes(x = album_acousticness, y
     plot.subtitle = element_text(size = 9)
   ) +
   scale_color_gradient(low = "red", high = "orange")
-  
+
 
 ggplotly(acousticness_plot_1)
 
 ```
+
+## Row {style="min-height:580px"}
+
+### Key's and Tempo's
+
+To the right are plots of the key mode and tempo distribution over all songs.
+
+According to the key mode plot, D major is the most common key followed by G major and B minor. What is interesting though, is that all keys that Spotify assigns are represented at least once.
+There is also a strange pattern in the frequencies; the lowest key modes all hover between 7 and 8 occurrences apart from G# major (at 3 occurrences). I have yet to find the reason behind this, though, it could be a coincidence.
+
+The tempo distribution shows that the songs in the corpus evenly spread across the different BPM's with a big peak at around 125 BPM and a smaller peak at around 88 BPM. furthermore, the mean tempo of the corpus (show with a red line) is ~120 BPM which also happens to be the BPM that humans are most keen of and is right around the average BPM for songs in general.
+
+
+
+### Distributions
+
+```{r, echo=FALSE}
+
+keysPlot <- ggplot(corpus, aes(key_mode)) +
+  stat_count(fill = "brown3", color="brown", alpha=.9, width=0.5, position = "dodge") +
+  labs(x = "Key",
+       y = "Frequency") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 10))
+
+mean_tempo <- mean(corpus$tempo)
+
+tempoPlot <- corpus %>% filter(tempo > 0) %>% ggplot(aes(tempo)) +
+  geom_histogram(aes(y=..density..), bins=30, fill="aquamarine3", color="aquamarine4") +
+  geom_density() +
+  labs(x = "Tempo in BPM",
+       y = "Density") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 10)) +
+  geom_vline(xintercept = mean_tempo, color = "brown1", linetype = 2) +
+  annotate(
+    "text",
+    x = mean_tempo + 6, y = 0.017,
+    label = "Mean\nTempo",
+    vjust = 1, size = 3, color = "grey40"
+  )
+
+tabsetPanel(
+    tabPanel("Density Distribution of the Tempo",
+           ggplotly(tempoPlot)),
+  tabPanel("Frequency of Different Key's",
+           ggplotly(keysPlot))
+
+)
+
+```
+
 
 ## Row
 
@@ -259,11 +316,12 @@ for (i in artistAlbumGenre_df$genre) {
 
 input_genres <- data.frame(genre=unlist(input_genres))
 
-genresPlot <- ggplot(input_genres, aes(genre)) + 
-  stat_count(color = "black", fill = "skyblue", width=0.5, position = "dodge") +
+genresPlot <- ggplot(input_genres, aes(genre)) +
+  stat_count(color = "deepskyblue4", fill = "deepskyblue2", width=0.6, position = "dodge") +
   labs(title = "Genre Distribution",
        x = "Genre",
-       y = "Frequency") + 
+       y = "Frequency") +
+  theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 10))
 
 ggplotly(genresPlot)
@@ -275,11 +333,11 @@ ggplotly(genresPlot)
 
 ### Rock vs Ambient
 
-In the plot below I compared the rock albums "World Is Yours", "MASS OF THE FERMENTING DREGS", "T H E", "醜奴兒" and "In Rainbows" to the ambient albums "A I A: Alien Observer", "Building a Better World", "Music Has The Right To Children", "小圈子" and "新しい日の誕生". 
+In the plot below I compared the rock albums "World Is Yours", "MASS OF THE FERMENTING DREGS", "T H E", "醜奴兒" and "In Rainbows" to the ambient albums "A I A: Alien Observer", "Building a Better World", "Music Has The Right To Children", "小圈子" and "新しい日の誕生".
 As you might notice, the genres in the [appendix](#corpus) do not directly classify some of the albums as rock or ambient. This is due to the way that Spotify classifies genres, you see, Spotify assigns a genre to the artist, not the album. Furthermore, Spotify is also very specific when it comes to genres resulting in a large sum of non matching genres (see the [genre distrubution plot](#global-analysis)). That is why i used the Spotify genres in combination with the genres classified by one of the largest music database: [Rate Your Music](https://rateyourmusic.com/).
 
-The resulting right plot gives a surprising result; the mean tempo (and it's standard deviation) of ambient and rock are not far off. While it does appear that ambient is slightly shifted to a lower bpm than rock, they are still very close. 
-Where we can see a difference is in the volume and duration; ambient tracks appear to be longer and at a lower volume than rock. 
+The resulting right plot gives a surprising result; the mean tempo (and it's standard deviation) of ambient and rock are not far off. While it does appear that ambient is slightly shifted to a lower bpm than rock, they are still very close.
+Where we can see a difference is in the volume and duration; ambient tracks appear to be longer and at a lower volume than rock.
 
 The left plot tells a different story, it shows that there is quite a bit of variation between rock and ambient when it comes to the different octaves and their timber, which is most noticeable at c01, c02, c05 and c06. This might give a clue as to why the genres appear so similar in the right plot, yet sound and feel so different.
 
@@ -390,10 +448,10 @@ comp |>
   mutate(
     sections =
       map(
-        sections,                                    
+        sections,
         summarise_at,
-        vars(tempo, loudness, duration),             
-        list(section_mean = mean, section_sd = sd)  
+        vars(tempo, loudness, duration),
+        list(section_mean = mean, section_sd = sd)
       )
   ) |>
   unnest(sections) |>
@@ -437,6 +495,33 @@ comp |> mutate(
   geom_violin() +
   scale_fill_manual(values = c("#f3969a", "#78c2ad")) +
   labs(x = "Spotify Timbre Coefficients", y = "", fill = "Genre")
+
+```
+
+## Row {style="min-height:800px"}
+
+### Various other comparisons 
+
+``` {r, echo=FALSE}
+library(reshape2)
+
+amb_roc_instru <- corpus %>% filter(track.album.name %in% c("A I A: Alien Observer", "Building a Better World", "Music Has The Right To Children", "小圈子", "新しい日の誕生", "World Is Yours", "MASS OF THE FERMENTING DREGS", "T H E", "醜奴兒", "In Rainbows")) %>%
+  mutate(temp_genre = case_when(
+    track.album.name %in% c("A I A: Alien Observer", "Building a Better World", "Music Has The Right To Children", "小圈子", "新しい日の誕生") ~ "Ambient",
+    track.album.name %in% c("World Is Yours", "MASS OF THE FERMENTING DREGS", "T H E", "醜奴兒", "In Rainbows") ~ "Rock",
+  ))
+
+df_long <- amb_roc_instru %>% select(temp_genre, danceability, energy, acousticness, instrumentalness, liveness, valence) %>% melt()
+
+# ggplot(amb_roc_instru, aes(x=energy, fill=as.factor(temp_genre))) +
+#   geom_density(alpha=0.4)
+
+ggplot(df_long, aes(x = value, fill = temp_genre)) +
+  geom_density(alpha = 0.5) +
+  facet_wrap(variable ~ ., scales = "free_x") +
+  theme_light() +
+  labs(fill = "Genre") +
+  scale_fill_manual(values = c("#f3969a", "#78c2ad"))
 
 ```
 
@@ -647,8 +732,6 @@ In Underwater DTW I have compared the live version of underwater by elephant gym
 That the 2 versions are so similar is not strange at all as Underwater is a math-rock song. This means that the song is performed by a band where typically the drummer and/or the bass decides the rhythm and tempo at which the whole band plays. If the rhythm/tempo is slightly off the whole song will 'fall apart', so keeping a consistent rhythm and tempo is crucial to a performance.
 That being said, the 2 songs do still differ, just not in rhythm or tempo. Rather, they differ in timber and sound stage. likely due to how/where they were recorded and things like the effects the instruments used (a.e. guitar pedals) or ones that were added later.
 
-
-
 ### Underwater DTW
 
 ```{r, echo=FALSE}
@@ -693,15 +776,15 @@ compmus_long_distance(
 
 ```
 
-## Row 
+## Row {style="min-height:600px"}
 
-### Analysis of the Timber and Chroma of 進化 by 猫 シ Corp. and t e l e p a t h テレパシー能力者 {style="min-height:600px"}
+### Analysis of the Timber and Chroma of 進化 by 猫 シ Corp. and t e l e p a t h テレパシー能力者 {style="min-height:600px}
 
-The Self-similarity plot shows the timber and chromagram of 進化 by 猫 シ Corp. and t e l e p a t h テレパシー能力者. I chose this song as it was has the highest liveness recorded by Spotify of any song in the corpus (see Plot A on the 'Global Analysis' tab). 
+The Self-similarity plot shows the timber and chromagram of 進化 by 猫 シ Corp. and t e l e p a t h テレパシー能力者. I chose this song as it was has the highest liveness recorded by Spotify of any song in the corpus (see Plot A on the 'Global Analysis' tab).
 What is interesting about this classification is that this song is not a live recording in the slightest. Then, why? well, the classification is likely due to the apparent outside noise in the song, you see, 進化 (translated = evolution) is an ambient focused song that incorporates sounds like fire and noise from train stations. This likely confuses the Spotify algorithm to where it classifies the song incorrectly as having a high liveness.
 The Timbre and Chroma similarity matrix sadly don't really bring forth the liveness, however, they do show the repeating pattern in the song very clearly. The Chroma creates an almost checkerboard like structure, whilst the timbre shows fade in and fade out that the song makes. This fading pattern is especially visible towards the beginning and start of the song.
 
-### Self-similarity Timber and Chromagram {style="min-height=600px"}
+### Self-similarity Timber and Chromagram {style="min-height:600px"}
 
 ```{r, echo=FALSE}
 
@@ -750,13 +833,14 @@ bind_rows(
   scale_fill_viridis_c(guide = "none") +
   theme_classic() +
   labs(x = "", y = "")
+
 ```
 
 ## Row {style="min-height:400px"}
 
 ### The Color Of Fire {data-width="350" style="min-height:150px"}
 
-"The Color Of Fire" by Boards of Canada is a perfect representation of the surrealistic, creepy and weirdly nostalgic feeling that the album "Music Has the Right to Children" presents. 
+"The Color Of Fire" by Boards of Canada is a perfect representation of the surrealistic, creepy and weirdly nostalgic feeling that the album "Music Has the Right to Children" presents.
 The song has a clear progression, starting at B7, then Eb seventh, Gb seventh, Ab seventh and back to B7 (followed by a fade off), which the Chordogram plotted below shows very clearly.
 
 ### Chordogram - The Color Of Fire
@@ -788,11 +872,66 @@ thecoloroffire |>
   scale_fill_viridis_c(guide = "none") +
   theme_minimal() +
   labs(x = "Time (s)", y = "") +
-  geom_vline(xintercept = 9, color = "red", size = 2) + 
-  geom_vline(xintercept = 45, color = "orange", size = 2) + 
-  geom_vline(xintercept = 60, color = "green", size = 2) + 
-  geom_vline(xintercept = 79, color = "magenta", size = 2)  
-  
+  geom_vline(xintercept = 9, color = "red", size = 2) +
+  geom_vline(xintercept = 45, color = "orange", size = 2) +
+  geom_vline(xintercept = 60, color = "green", size = 2) +
+  geom_vline(xintercept = 79, color = "magenta", size = 2)
+
+
+```
+
+## Row {style="min-height:600px"}
+
+### Fastest vs slowest song {data-width="350" style="min-height:150px"}
+
+To the right are tempograms of the slowest and fastest song in the corpus given by Spotify's algorithm. The fastest song is "ハイライト" by MASS OF THE FERMENTING DREGS with a BPM of 206.37 and the slowest song in the corpus is "Where I Found You (One Star)" by Candy Claws with a BPM of 0. Yes, you saw that right. The slowest song (according to the Spotify algorithm) has a BPM of 0. This has to be a mistake, whilst the song definitely has a slower BPM, a BPM of 0 is virtually impossible. Then why?
+
+First, lets look at the tempogram of ハイライト, which clearly shows lines at the 200-210 and 400-420 BPM range, inline with the predictions made by Spotify. We can also see an interesting pattern arise in the tempogram; the tempo is not a straight line throughout the song. This is likely due to the song being played by a band, which might not always play at perfect tempo (compared to a song made on the computer).
+
+In comparison to the fastest plot, the slowest plot seems all over the place. There are some instances where we can see the BPM, but only for a short period. This is probably the reason why Spotify's algorithm failed.
+
+### Tempogram's
+
+```{r, echo=FALSE}
+
+# fastest_song <- corpus[which.max(corpus$tempo),]
+# slowest_song <- corpus[which.min(corpus$tempo),]
+# 
+# print(slowest_song$track.name)
+# 
+# track_1 <- appendix[appendix$track.name == slowest_song$track.name,]$artist
+# 
+# print(track_1)
+# 
+# print(slowest_song$tempo)
+# print(fastest_song$track.name)
+# print(fastest_song$tempo)
+
+highlight <- get_tidy_audio_analysis("3MZgRR5kAyMcgnn3LuhgQK")
+
+whereifoundyou <- get_tidy_audio_analysis("1o3amYz7RPk7OpVLbarVcQ")
+
+fast_plot <- highlight |> tempogram(window_size = 8, hop_size = 1, cyclic = FALSE) |>
+  ggplot(aes(x = time, y = bpm, fill = power)) +
+  geom_raster() +
+  scale_fill_viridis_c(guide = "none") +
+  labs(x = "Time (s)", y = "Tempo (BPM)") +
+  theme_classic()
+
+slow_plot <- whereifoundyou |> tempogram(window_size = 8, hop_size = 1, cyclic = FALSE) |>
+  ggplot(aes(x = time, y = bpm, fill = power)) +
+  geom_raster() +
+  scale_fill_viridis_c(guide = "none") +
+  labs(x = "Time (s)", y = "Tempo (BPM)") +
+  theme_classic()
+
+tabsetPanel(
+    tabPanel("Fastest Song",
+           ggplotly(fast_plot)),
+  tabPanel("Slowest Song",
+           ggplotly(slow_plot))
+
+)
 
 ```
 
