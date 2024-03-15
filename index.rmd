@@ -9,7 +9,6 @@ output:
       bootswatch: minty
     vertical_layout: scroll
     css: style.css
-    runtime: shiny 
 ---
 
 ```{=html}
@@ -262,7 +261,7 @@ The tempo distribution shows that the songs in the corpus evenly spread across t
 
 
 
-### Distributions
+### Density Distribution of the Tempo
 
 ```{r, echo=FALSE}
 
@@ -290,13 +289,14 @@ tempoPlot <- corpus %>% filter(tempo > 0) %>% ggplot(aes(tempo)) +
     vjust = 1, size = 3, color = "grey40"
   )
 
-tabsetPanel(
-    tabPanel("Density Distribution of the Tempo",
-           ggplotly(tempoPlot)),
-  tabPanel("Frequency of Different Key's",
-           ggplotly(keysPlot))
+ggplotly(tempoPlot)
 
-)
+```
+
+### Frequency of Different Key's
+
+```{r, echo=FALSE}
+ggplotly(keysPlot)
 
 ```
 
@@ -880,7 +880,7 @@ thecoloroffire |>
 
 ```
 
-## Row {style="min-height:600px"}
+## Row {style="min-height:1100px"}
 
 ### Fastest vs slowest song {data-width="350" style="min-height:150px"}
 
@@ -891,6 +891,8 @@ First, lets look at the tempogram of ハイライト, which clearly shows lines 
 In comparison to the fastest plot, the slowest plot seems all over the place. There are some instances where we can see the BPM, but only for a short period. This is probably the reason why Spotify's algorithm failed.
 
 ### Tempogram's
+
+##### Fastest Song
 
 ```{r, echo=FALSE}
 
@@ -925,13 +927,14 @@ slow_plot <- whereifoundyou |> tempogram(window_size = 8, hop_size = 1, cyclic =
   labs(x = "Time (s)", y = "Tempo (BPM)") +
   theme_classic()
 
-tabsetPanel(
-    tabPanel("Fastest Song",
-           ggplotly(fast_plot)),
-  tabPanel("Slowest Song",
-           ggplotly(slow_plot))
+ggplotly(fast_plot)
+```
 
-)
+##### Slowest Song
+
+```{r, echo=FALSE}
+
+ggplotly(slow_plot)
 
 ```
 
