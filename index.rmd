@@ -27,6 +27,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 library(tidytext)
 library(tidyverse)
+library(tidymodels)
+library(heatmaply)
+library(ggdendro)
 library(spotifyr)
 library(flexdashboard)
 library(plotly)
@@ -61,7 +64,9 @@ corpus |>
 
 ### Corpus Description {style="min-height:400px"}
 
-The corpus for this musical analysis consists of a collection of albums (see Appendix) that I chose based on my personal interest. I chose albums specifically, as it is the form in which I consume most of my music, but it will also ensure that the overlap in musical genres is more consistent between songs. This does however mean that the analysis will focus more on the difference between the albums as opposed to differences between individual songs. As for the corpus, it consists of a variety of genres including rock, pop, post-rock, ambient, shoegaze, neo-psychedelia, hip-hop. At first glance it might seem as if there is little overlap between the album’s genres, however, most can be categorized in either rock, ambient, pop, or hip-hop. Though there are some album’s that can be considered atypical for these categories, for example LONG SEASON by the Fishmans. This album consists of a single 35-minute song and incorporates a variety of genres into one. Another example is REGRET WHEN IT WAS LOST by death’s dynamic shroud which at points blurs the line between surrealism and music. Or F# A# ∞ by Godspeed You! Black Emperor, an album containing multiple monologues throughout the song creating an eerie vibe. I chose to incorporate these albums not only because they are some of my personal favorites but also for their uniqueness, which should hopefully lead to a more interesting analysis. The corpus contains many more such examples, which I will cover further in the analysis. However, most of the corpus consists of more typical genre representative albums, for example the albums made by; Radiohead, No Party For Coa Dong, tricot, Pink Floyd, Polyphia and Panchiko, are more typical to rock. So, all in all, the corpus consists of a combination of typical and atypical albums which should lead to an interesting analysis of the distinctions an overlap between genres and individual albums/songs.
+The corpus for this musical analysis consists of a collection of albums (see Appendix) that I chose based on my personal interest. I chose albums specifically, as it is the form in which I consume most of my music. As for the corpus, it consists of a variety of genres including rock, pop, post-rock, ambient, shoegaze, neo-psychedelia, hip-hop.
+
+There are also some album’s that can be considered atypical for these categories, for example LONG SEASON by the Fishmans. This album consists of a single 35-minute song and incorporates a variety of genres into one. Another example is REGRET WHEN IT WAS LOST by death’s dynamic shroud which at points blurs the line between surrealism and music. Or F# A# ∞ by Godspeed You! Black Emperor, an album containing multiple monologues throughout the song creating an eerie vibe. I chose to incorporate these albums not only because they are some of my personal favorites but also for their uniqueness, which should hopefully lead to a more interesting analysis. The corpus contains many more such examples, which I will cover further in the analysis. However, most of the corpus consists of more typical genre representative albums, for example the albums made by; Radiohead, No Party For Coa Dong, tricot, Pink Floyd, Polyphia and Panchiko, are more typical to rock. So, all in all, the corpus consists of a combination of typical and atypical albums that I want to use to find out what makes music interesting to me and what draws me to specific albums. This should also lead to an interesting analysis of the distinctions an overlap between genres and individual albums/songs in the corpus.
 
 ### Appendix (album - artist) {style="min-height:750px"}
 
@@ -135,7 +140,7 @@ datatable(appendix, style = "auto", colnames = c("Album", "Track Name", "Release
 
 #### Analysis over the entire range of songs
 
-The multivariate analysis plot shows a comparison of the liveness, acousticness and the speechness of each individual song. What is interesting about the plot is that there appears to be very little acousticness and speechness. This is relatively odd as many of the songs should contain speech, furthermore, the liveness seems rather low, possibly due to the amount of ambient music, but what is then even more odd is the fact that many of the songs with the highest liveness are ambient songs (this may be due to Spotify's algorithm not fully comprehending ambient music). The acousticness on the other hand seems all over the place, likely due to the fast differences in genres.
+The multivariate analysis plot shows a comparison of the liveness, acousticness and the speechness of each individual song. What is interesting about the plot is that there appears to be very little acousticness and speechness. This is relatively odd as many of the songs should contain speech, furthermore, the liveness seems rather low, possibly due to the amount of ambient music, but what is then even more odd is the fact that many of the songs with the highest liveness are ambient leaning songs (this may be due to Spotify's algorithm not fully comprehending ambient music). The acousticness on the other hand seems all over the place, likely due to the fast differences in genres.
 
 #### Differences in energy
 
@@ -525,9 +530,198 @@ ggplot(df_long, aes(x = value, fill = temp_genre)) +
 
 ```
 
+# Classification and Clustering {data-navmenu="Analysis" data-orientation=rows}
+
+```{r, include=FALSE}
+
+corpus <- get_playlist_audio_features("", "75LhP6wXfee0eYHuW28nkw")
+corpus |>
+  summarise(
+    mean_speechiness = mean(speechiness),
+    mean_acousticness = mean(acousticness),
+    mean_liveness = mean(liveness),
+    sd_speechiness = sd(speechiness),
+    sd_acousticness = sd(acousticness),
+    sd_liveness = sd(liveness),
+    median_speechiness = median(speechiness),
+    median_acousticness = median(acousticness),
+    median_liveness = median(liveness),
+    mad_speechiness = mad(speechiness),
+    mad_acousticness = mad(acousticness),
+    mad_liveness = mad(liveness)
+  )
+```
+
+## Row
+
+### PCA {style="min-height:600px"}
+As we explore the corpus, more and more variables become noticeable to have a great influence. However, this begs the question which variables the songs in the corpus share and which variables are vastly different. 
+The variables that all songs share could be a great indicator as to what draws me to certain songs/albums, whereas the difference in variable could explain things that I am not really interested in or don't really matter for me to like the song.
+To explore these variables and their contribution to my interest I decided to analyse the corpus with a PCA analysis. The PCA plot shows what percentage of the variance is explained by a given variable. 
+For the analysis I decided to use the variables "danceability", "energy", "speechiness", "acousticness", "instrumentalness", "liveness" and "valence" of each song. However, as you might notice, the "tempo", "key" and "mode" variable are not percent. The reason for which is that these explained a combined 99% of the variance, meaning that my music taste does not lean towards a specific key/mode or tempo. And in order to see the variance in the other variables, leaving them out would yield a more interesting analysis.
+
+The scree plot of the PCA shows this contribution per variable and is inline with the "vector plot" in the sense that the the highest contibuter in the scree plot is also the most red and big vector in the "vector plot".
+The PCA analysis shows that there are a few variables that are necessary for me to enjoy an album or song, namely, "liveness", "speechiness", "dancebility"and the "valance" all need to be in the same range. whereas the "instrumentalness", "acousticness" and "energy" can somewhat differ (thought, not as much as the tempo, mode or key). 
+This is also inline with the findings of the ambient and rock comparisons, where the "energy", "acousticness" and "instrumentallness" showed the greatest difference between the two.
+
+
+### Scree Plot of the Different Variables
+```{r, echo=FALSE}
+library(factoextra)
+# , mode, key, tempo
+
+pca.in <- corpus %>% select(danceability, energy, speechiness, acousticness, instrumentalness, liveness, valence)
+
+pca.out <- prcomp(x = pca.in, scale = FALSE, center = TRUE)
+
+fviz_eig(pca.out, barfill = "#00AFBB", linecolor = "#FC4E07")
+
+```
+
+### Vector Plot of the Variables Contribution
+
+```{r, echo=FALSE}
+
+fviz_pca_var(pca.out,
+             col.var = "contrib", 
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             repel = TRUE
+             )
+```
+
+## Row
+
+### Clustering {style="min-height:600px"}
+Next to finding the contribution of the different variables, I wanted to find groups in the corpus that are similar to each other in the hopes of discovering genres. 
+In the rock vs ambient analysis, I already explained how Spotify uses a vast amount of very specific genres, which led me to use another website to find them for certain albums. But this seems a bit redundant, after all, the Spotify's API give us a lot of variables so why not discover them our-self. To achieve this I used the K-means algorithm together with an analysis of the sum of squares for different amounts of clusters. 
+In the sum of squares plot we can see that after three clusters, the sum of squares does not decrease nearly as fast, which means that 3 clusters are enough to explain the data. In the most right hand plot, these 3 clusters are shown. 
+
+The fact that k-means gave 3 clusters was a surprise to me, after all, earlier analysis led me to believe that my music only contained 2 main genres. And although these clusters might not reflect actual genres, it is still interesting to see that there may be more overlapping genres than I expected.
+
+As I cannot show the name of the songs in the k-means plot, i decided to make a new datatable below with the information of which cluster the songs belong to.
+
+
+### Analysis for the Number of Clusters
+
+```{r, echo=FALSE}
+
+wss <- 0
+
+for (i in 1:15) {
+  km.out <- kmeans(pca.out$x[, 1:7], centers = i, nstart=30)
+  # Save total within sum of squares to wss variable
+  wss[i] <- km.out$tot.withinss
+}
+
+plot(1:15, wss, type = "b", 
+     xlab = "Number of Clusters", 
+     ylab = "Within groups sum of squares", col = "#FC4E07")
+
+```
+
+### K-means Clusters
+
+```{r, echo=FALSE}
+
+km.out <- kmeans(pca.out$x[, 1:7], nstart=30, centers=3)
+
+km.colors <- matrix(NA, nrow = length(km.out$cluster), ncol = 1)
+km.colors[km.out$cluster == 1] <- "#00AFBB"
+km.colors[km.out$cluster == 2] <- "#E7B800"
+km.colors[km.out$cluster == 3] <- "#FC4E07"
+
+km.plot <- plot(pca.out$x[, 1:2], col = km.colors, xlab="", ylab="", main="k-means with 3 clusters")
+
+```
+
+## Row {style="min-height:750px"}
+
+### Corpus with Clusters {style="min-height:750px"}
+
+```{r, echo=FALSE}
+
+appendix <- corpus %>%
+  mutate(cluster = km.out$cluster) %>%
+  select(track.album.name, track.artists, track.name, track.album.release_date, cluster)
+
+artists <- lapply(appendix$track.artists, function(x) x$name)
+
+for( i in 1:nrow(appendix)){
+  name <- artists[i][[1]]
+
+  if (length(name) > 1){
+    for(j in length(name)){
+      name <- paste(name[j-1], name[j], sep = ", ")
+    }
+  }
+
+  appendix[i, "artist"] <- name
+}
+
+appendix <- subset(appendix, select = -track.artists)
+
+artistAlbumGenre_df <- appendix %>%
+  select(track.album.name, artist) %>%
+  unique()
+
+artistAlbumGenre_df$genre = NA
+
+appendix <- merge(appendix, artistAlbumGenre_df)
+
+datatable(appendix, style = "auto", colnames = c("Album", "Artist", "Track Name", "Release Date", "Cluster"))
+
+```
+
+## Row
+
+### Clustering Albums with a Tree
+Next to clustering the songs, i also thought it would be interesting to visualize the clusters with a tree. However, there are too many songs to make a meaningful plot, which is why I decided to make the tree with the albums instead. 
+For the albums, I took the mean of all variables and plotted the result. 
+
+The final tree can be cut at different points, but if we follow the result of k-means and cut the tree at a depth of 3, we get a cluster reminiscent of ambient, a cluster reminiscent of rock and a very big cluster with what seems like a mixture of genres but no specific one. So there seems to be something of a genre that overlaps most of my music taste next to ambient and rock, but what exactly, is difficult to find out and is likely related to the PCA analysis above.
+
+
+### Tree cluster {style="min-height:750px"}
+
+```{r, echo=FALSE, fig.height=9, fig.width=15}
+
+pca.in.tem <- corpus %>% group_by(track.album.name) %>% summarise(
+    mean_speechiness = mean(speechiness),
+    mean_acousticness = mean(acousticness),
+    mean_liveness = mean(liveness),
+    mean_danceability = mean(danceability),
+    mean_energy = mean(energy),
+    mean_instrumentalness = mean(instrumentalness),
+    mean_valence = mean(valence)
+    # ,
+    # mean_key = mean(key)
+    # ,
+    # mean_mode = mean(mode)
+    # ,
+    # mean_tempo = mean(tempo)
+  )
+
+pca.in <- pca.in.tem[, 2:8]
+
+labels <- pca.in.tem[, 1] %>% unique()
+
+pca.out <- prcomp(x = pca.in, scale = FALSE, center = TRUE)
+
+hclust.complete <- hclust(dist(pca.out$x), method = "complete")
+
+plot(hclust.complete, labels = labels[[1]], main="Tree with Method: Complete", hang = -1, cex = 1, xlab = "Album",col="#00AFBB") 
+
+```
+
+
+
 # Individual Songs {data-navmenu=Analysis data-orientation=rows}
 
 ## Row
+
+<!-- Useful inspo for analysis: -->
+<!-- I have extracted the chromagrams of two highly popular tracks from different playlists. The first chromagram represents “Standing Next to You” by Jungkook, featuring dominant notes C#/Db, D, and A. In contrast, the second chromagram depicts “Tell Me” by Wonder Girls, showing dominant notes C#/Db, F#/Gb, and B. A notable distinction emerges when comparing the two: “Standing Next to You” displays a more colorful chromagram, suggesting a diverse range of pitches and a potentially more complex harmonic structure. Furthermore, it appears that “Standing Next to You” has a clearer musical structure, with recurring patterns emphasizing its melodic motifs. It is important to note that these insights are specific to the tracks “Standing Next to You” and “Tell Me” and should not be generalized to comparisons between music from different eras, such as the millennium and the present. -->
+
 
 ### Chroma Analysis of selected songs
 Below are chroma plots showing interesting patterns in selected songs from my corpus.
@@ -942,6 +1136,15 @@ ggplotly(slow_plot)
 
 ## Column
 
-### Nothing Here Yet
+### Concluding the Analysis of my Personal Favorite Albums
+Over the few weeks that we had to working on our analysis, I discovered many things about my own music taste, mainly, what peaks my interest/disinterest in different albums and songs. The global analysis really showed how, even though there is a vast difference in the energy, valance, tempo and keys between the songs in the corpus. There is also a great amount of overlap in the liveness and more importantly, the genres. Which led me to analyzing the differences between the 2 biggest/most common genres in my corpus. This showed me that there might be more overlap between the songs I like than first meets the eye. Rock and ambient share more variables than one might think which explains my liking towards specific albums within those genres.  
 
-#### :)
+In the clustering analysis I sought to further explain the different genres and the impact of the different Spotify genres. Here, I discovered how thing like the tempo, key, instrumentalness and acousticness differ quite a bit between songs and albums and are of less importance to my music taste. And how the energy, valance, liveness, speechiness and danceability are fairly consistent throughout the corpus meaning that they are of greater importance. 
+Furthermore, the cluster analysis showed me, that to my surprise, there where more than 2 groups that explained my corpus. Where I first thought that my main interests lay between ambient and rock, there was now a third group. Not only that but ambient and rock might not even be the best descriptors of the other groups.
+
+Next to all the analyzing I did with regards to the entire selection of songs. I also analyzed individual songs based on, what seemed to me, the most interesting, or where outliers to certain variables. Giving me deeper insight into the structure of different songs in the corpus. Like the tempo, rhythm, timber and the layout (repeating patterns etc.)
+
+To conclude, I discovered that my preference for music lays, not in the tempo or the keys or the instrumentalness, but rather in the valance, liveness and speechiness. But also, as demostrated in the individual song tab, in weird/unusual patterns hinting to slightly ambient and dreamlike music. And to contrast that, There is also a portion that completely opposes that notion and shows strict recurring patterns/tempos.
+
+
+
